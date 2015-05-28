@@ -1,37 +1,50 @@
 import json
 
 from os import listdir
-from os.path import isfile, join, basename, splitext
+from os.path import isfile, join, splitext
 
 from proteibb.common.project import *
 
 class Workspace:
-    """This class loads a structure of the build system into a set of projects."""
+    """
+    This class loads a structure of the build system into
+    a set of projects, sources and configurations.
+    """
 
-    project_type_list = ['automation', 'production', 'user']
+    workspace_structure = ['configuration', 'projects', 'sources']
 
     def __init__(self, base_path):
         self._projects = []
+        self._sources = []
 
         if not base_path.endwith('/'):
             base_path.append('/')
 
-        def make_project_path(pt):
-            return base_path + 'workspace' + pt + '/'
-
-        for project_type in self.project_type_list:
-            project_dir = make_project_path(project_type)
-            for file_name in listdir(project_dir):
-                file_path = join(project_dir, file_name)
-                if isfile(file_path) and file_path.endswith('.json'):
-                    project = self._make_project(file_path, file_name, project_type)
-                    self._projects.append(project)
+        for structure in self.workspace_structure:
+            directory = base_path + structure + '/'
+            method_name = '_add_' + structure
+            method = getattr(self, method_name)
+            self._load_workspace(directory, method)
 
     @staticmethod
-    def _make_project(project_path, project_name, project_type):
-        with open(project_path) as data_file:
-            project_data = json.load(data_file.readall())
-            return make_project(project_path, project_name, project_type, project_data)
+    def _load_workspace(directory, creation_callback):
+        for file_name in listdir(directory):
+            entry_path = join(directory, file_name)
+            entry_name, extension = splitext(file_name)
+            if isfile(entry_path) and extension is '.json':
+                with open(entry_path) as data_file:
+                    entry_data = json.load(data_file)
+                    creation_callback(entry_name, entry_path, entry_data)
+
+    def _add_configuration(self, cname, cpath, cdata):
+        pass
+
+    def _add_projects(self, pname, ppath, pdata):
+        project = make_project(pname, ppath, pdata)
+        self._projects.append(project)
+
+    def _add_sources(self, sname, spath, sdata):
+        pass
 
     def get_projects(self, project_filter):
         return project_filter(self._projects)

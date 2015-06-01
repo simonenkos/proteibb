@@ -48,3 +48,6 @@ class Workspace:
 
     def get_projects(self, project_filter):
         return project_filter(self._projects)
+
+    def get_sources(self, source_filter):
+        return source_filter(self._sources)

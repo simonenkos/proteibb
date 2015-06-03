@@ -3,7 +3,8 @@ import json
 from os import listdir
 from os.path import isfile, join, splitext
 
-from proteibb.common.project import *
+from proteibb.core.project import *
+from proteibb.core.source import *
 
 class Workspace:
     """

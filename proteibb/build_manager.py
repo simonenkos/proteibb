@@ -1,12 +1,12 @@
-import proteibb.common.workspace as ws
+import proteibb.core.workspace as ws
 
 class BuildManager:
     """Build manager initialises a structure of the build system and make
     some processing blocks to pass them into buildbot.
     """
 
-    def __init__(self, bm_root_path):
-        self._ws = ws.Workspace(bm_root_path)
+    def __init__(self, ws_root_path):
+        self._ws = ws.Workspace(ws_root_path)
 
     def get_slaves(self):
         pass

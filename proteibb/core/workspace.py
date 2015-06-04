@@ -35,17 +35,18 @@ class Workspace:
             if isfile(entry_path) and extension is '.json':
                 with open(entry_path) as data_file:
                     entry_data = json.load(data_file)
-                    creation_callback(entry_name, entry_path, entry_data)
+                    creation_callback(entry_data)
 
-    def _add_configuration(self, cname, cpath, cdata):
-        pass
+    # def _add_configuration(self, cname, cpath, cdata):
+    #     pass
+    #
+    # def _add_projects(self, pname, ppath, pdata):
+    #     project = make_project(pname, ppath, pdata)
+    #     self._projects.append(project)
 
-    def _add_projects(self, pname, ppath, pdata):
-        project = make_project(pname, ppath, pdata)
-        self._projects.append(project)
-
-    def _add_sources(self, sname, spath, sdata):
-        pass
+    def _add_sources(self, data):
+        sources = source_factory.make(data)
+        self._sources.append(sources)
 
     def get_projects(self, project_filter):
         return project_filter(self._projects)

@@ -9,6 +9,7 @@ class Source:
             {
                 "branch"  : "trunk",
                 "version" : "1.2"
+                // automation-specific options
             }
         ],
         "production" : [
@@ -16,6 +17,7 @@ class Source:
                 "branch"  : "release_1_0",
                 "version" : "1.0"
                 "dependencies : [ "lib_a:0.0.5:0.0.6:0.0.7:0.0.8" ]
+                // production-specific options
             },
             {
                 "branch"  : "release_1_1",
@@ -25,8 +27,9 @@ class Source:
         ],
         "user" : [
             {
-                "self-branch" : "test_bug10001",
-                "prod-branch" : "release_1_0" // copy version, dependencies
+                "branch" : "trunk",
+                "version" : "1.3"
+                // user-specific options
             }
         ],
     }
@@ -34,14 +37,25 @@ class Source:
     Dependencies lists are also optional.
     """
 
-    def __init__(self):
-        self._name = ""
-        self._vcs = None
-        self._url = ""
-        self._automation = []
-        self._production = []
-        self._user = []
+    def __init__(self, name, vcs, url):
+        self._name = name
+        self._vcs = vcs
+        self._url = url
+        self._branch = ""
+        self._version = ""
+        self._dependencies = []
+
+    def get_name(self):
+        return self._name
+
+    def get_vcs(self):
+        return self._vcs
+
+    def get_url(self):
+        return self._url
 
     def get_change_source(self):
-        # ToDo
-        return None
+        raise NotImplementedError()
+
+    def get_sources(self):
+        raise NotImplementedError()

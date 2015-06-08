@@ -1,3 +1,5 @@
+from proteibb.util import *
+
 class Source:
     """
     Example of source config file:
@@ -37,10 +39,21 @@ class Source:
     Dependencies lists are also optional.
     """
 
-    def __init__(self, name, vcs, url):
-        self._name = name
-        self._vcs = vcs
-        self._url = url
+    common_options = [
+        Detail('name', ""),
+        Detail('url', ""),
+        VCS(),
+    ]
+    specific_options = [
+        {'branch': True},
+        {'version': True},
+        {'dependencies': True}
+    ]
+
+    def __init__(self):
+        self._name = ""
+        self._vcs = ""
+        self._url = ""
         self._branch = ""
         self._version = ""
         self._dependencies = []
@@ -54,8 +67,26 @@ class Source:
     def get_url(self):
         return self._url
 
+    def get_branch(self):
+        return self._branch
+
+    def get_version(self):
+        return self._version
+
+    def get_dependencies(self):
+        return self._dependencies
+
     def get_change_source(self):
         raise NotImplementedError()
 
     def get_sources(self):
         raise NotImplementedError()
+
+    def parse_common_source_details(self, details, detail_names):
+        def get_attribute(optional, attr_name):
+            attr = details[attr_name]
+            if not attr and not optional:
+                raise SyntaxError("no '" + attr_name + "' attribute found")
+        for name, is_optional in detail_names:
+            attr_value = get_attribute(is_optional, name)
+            setattr(self, '_' + name, attr_value)

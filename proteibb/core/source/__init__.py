@@ -3,26 +3,19 @@ from source import *
 class _SourceFactory:
 
     def __init__(self):
-        self._registry = {}
+        self._registry = []
 
-    def register(self, name, func):
-        self._registry[name] = func
-        return func
+    def register(self, func):
+        self._registry.append(func)
 
     def make(self, data):
-        name = data['name']
-        vsc  = data['vcs']
         sources = []
-        for name, func in self._registry:
-            details = data[name]
-            if details:
-                sources.append(func(details))
+        for func in self._registry:
+            sources.append(func(data))
         return sources
 
 source_factory = _SourceFactory()
 
-def add_source_factory(name):
-    def factory(function):
-        source_factory.register(name, function)
-        return function
-    return factory
+def add_source_factory(function):
+    source_factory.register(function)
+    return function

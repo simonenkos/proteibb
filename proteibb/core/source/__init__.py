@@ -1,4 +1,6 @@
 from source import *
+from properties import *
+from dependency import *
 
 class _SourceFactory:
 

@@ -20,7 +20,10 @@ class Property:
             raise NotImplementedError()
         if not self._property_validator(val):
             raise SyntaxError("invalid value for " + self._name + " property")
-        self._value = val
+        self._apply_new_value(val)
 
     def _set_validator(self, validator):
         self._property_validator = validator
+
+    def _apply_new_value(self, value):
+        self._value = value

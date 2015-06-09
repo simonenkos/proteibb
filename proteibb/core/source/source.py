@@ -1,4 +1,4 @@
-from proteibb.util import *
+from properties import *
 
 class Source:
     """
@@ -24,14 +24,17 @@ class Source:
             {
                 "branch"  : "release_1_1",
                 "version" : "1.1"
-                "dependencies" : [ "lib_a:>=0.0.9:<0.1.9", "lib_b:1.1", "lib_c" ]
+                "dependencies" : [ "lib_a:>=0.0.9:<0.1.9", "lib_b:1.1", "lib_c" ],
             },
         ],
         "user" : [
             {
-                "branch" : "trunk",
-                "version" : "1.3"
+                "branch" : "new_feature_1",
+                "version" : "1.3",
                 // user-specific options
+                "dep-branch" : "trunk",
+                "dependencies" : [ "lib_d:>=1.0" ]
+
             }
         ],
     }
@@ -39,24 +42,13 @@ class Source:
     Dependencies lists are also optional.
     """
 
-    common_options = [
-        Detail('name', ""),
-        Detail('url', ""),
-        VCS(),
-    ]
-    specific_options = [
-        {'branch': True},
-        {'version': True},
-        {'dependencies': True}
-    ]
-
     def __init__(self):
-        self._name = ""
-        self._vcs = ""
-        self._url = ""
-        self._branch = ""
-        self._version = ""
-        self._dependencies = []
+        self._name = StringProperty('name')
+        self._vcs = VcsProperty()
+        self._url = UrlProperty()
+        self._branch = StringProperty('branch', True)
+        self._version = VersionProperty()
+        self._dependencies = DependenciesProperty()
 
     def get_name(self):
         return self._name

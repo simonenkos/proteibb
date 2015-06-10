@@ -18,13 +18,13 @@ class Source:
             {
                 "branch"  : "release_1_0",
                 "version" : "1.0"
-                "dependencies : [ "lib_a:0.0.5:0.0.6:0.0.7:0.0.8" ]
+                "dependencies : [ "lib_a:=0.0.5:=0.0.6:=0.0.7:=0.0.8" ]
                 // production-specific options
             },
             {
                 "branch"  : "release_1_1",
                 "version" : "1.1"
-                "dependencies" : [ "lib_a:>=0.0.9:<0.1.9", "lib_b:1.1", "lib_c" ],
+                "dependencies" : [ "lib_a:>0.0.9:<0.1.9", "lib_b:=1.1", "lib_c" ],
             },
         ],
         "user" : [
@@ -33,7 +33,7 @@ class Source:
                 "version" : "1.3",
                 // user-specific options
                 "dep-branch" : "trunk",
-                "dependencies" : [ "lib_d:>=1.0" ]
+                "dependencies" : [ "lib_d:>1.0" ]
 
             }
         ],

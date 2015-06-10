@@ -42,7 +42,7 @@ class VersionProperty(SourceProperty):
     def _apply_new_value(self, value):
         version = []
         if len(value):
-            version = [int(num) for num in value.split('.')]
+            version = split_version(value)
         SourceProperty._apply_new_value(self, version)
 
 class DependenciesProperty(SourceProperty):
@@ -54,11 +54,20 @@ class DependenciesProperty(SourceProperty):
             if not isinstance(val, list):
                 return False
             for dep in val:
-                if not isinstance(dep, str) or not re.match('^(?:\w+)(?:(?::(?:|>|<)\d+)(?:\.\d+)*)*$', dep):
+                if not isinstance(dep, str) or not re.match('^(?:\w+)(?:(?::(?:=|>|<)\d+)(?:\.\d+)*)*$', dep):
                     return False
             return True
 
         self._set_validator(validate)
 
-    def _apply_new_value(self, value):
-        SourceProperty._apply_new_value(value)
+    def _apply_new_value(self, dep_list):
+        dependencies = []
+        for dep in dep_list:
+            dep_details = dep.split(':')
+            d = Dependency(dep_details[0])
+            for version in dep_details[1:]:
+                v = split_version(version[1:])
+                q = version[0]
+                d.add_version(v, q)
+            dependencies.append(d)
+        SourceProperty._apply_new_value(self, dependencies)

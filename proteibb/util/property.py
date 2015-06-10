@@ -19,7 +19,7 @@ class Property:
         if not self._property_validator:
             raise NotImplementedError()
         if not self._property_validator(val):
-            raise SyntaxError("invalid value for " + self._name + " property")
+            raise SyntaxError("invalid value for '" + self._name + "' property")
         self._apply_new_value(val)
 
     def _set_validator(self, validator):

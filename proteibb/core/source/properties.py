@@ -13,11 +13,10 @@ class SourceProperty(Property):
     def is_detail_specific(self):
         return self._is_detail_specific
 
-
 class StringProperty(SourceProperty):
 
-    def __init__(self, string, is_optional=False):
-        SourceProperty.__init__(self, string, "", is_optional)
+    def __init__(self, string, is_optional=False, is_detail_specific=False):
+        SourceProperty.__init__(self, string, "", is_optional, is_detail_specific)
         self._set_validator(lambda val: isinstance(val, str))
 
 class UrlProperty(SourceProperty):
@@ -35,7 +34,7 @@ class VcsProperty(SourceProperty):
 class VersionProperty(SourceProperty):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'version', [], True)
+        SourceProperty.__init__(self, 'version', [], True, True)
         validate = lambda val: isinstance(val, str) and (not len(val) or re.match('^(?:\d+)(?:\.\d+)*$', val))
         self._set_validator(validate)
 
@@ -48,7 +47,7 @@ class VersionProperty(SourceProperty):
 class DependenciesProperty(SourceProperty):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'dependencies', [], True)
+        SourceProperty.__init__(self, 'dependencies', [], True, True)
 
         def validate(val):
             if not isinstance(val, list):

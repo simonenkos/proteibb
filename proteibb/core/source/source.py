@@ -42,43 +42,43 @@ class Source:
     Dependencies lists are also optional.
     """
 
-    def __init__(self):
-        self._name = StringProperty('name')
-        self._vcs = VcsProperty()
-        self._url = UrlProperty()
-        self._branch = StringProperty('branch', True)
-        self._version = VersionProperty()
-        self._dependencies = DependenciesProperty()
+    def __init__(self, data, details):
+        prop_list = [
+            StringProperty('name'),
+            VcsProperty(),
+            UrlProperty(),
+            StringProperty('branch', True, True),
+            StringProperty('revision', False, True),
+            VersionProperty(),
+            DependenciesProperty(),
+        ]
+        self._properties = {}
+        for prop in prop_list:
+            self._properties[prop.get_name()] = prop
 
-    def get_name(self):
-        return self._name
+    def get_property(self, property_name):
+        return self._properties[property_name]
 
-    def get_vcs(self):
-        return self._vcs
-
-    def get_url(self):
-        return self._url
-
-    def get_branch(self):
-        return self._branch
-
-    def get_version(self):
-        return self._version
-
-    def get_dependencies(self):
-        return self._dependencies
+    # def get_name(self):
+    #     return self._properties['name']
+    #
+    # def get_vcs(self):
+    #     return self._properties['vcs']
+    #
+    # def get_url(self):
+    #     return self._url
+    #
+    # def get_branch(self):
+    #     return self._branch
+    #
+    # def get_version(self):
+    #     return self._version
+    #
+    # def get_dependencies(self):
+    #     return self._dependencies
 
     def get_change_source(self):
         raise NotImplementedError()
 
     def get_sources(self):
         raise NotImplementedError()
-
-    def parse_common_source_details(self, details, detail_names):
-        def get_attribute(optional, attr_name):
-            attr = details[attr_name]
-            if not attr and not optional:
-                raise SyntaxError("no '" + attr_name + "' attribute found")
-        for name, is_optional in detail_names:
-            attr_value = get_attribute(is_optional, name)
-            setattr(self, '_' + name, attr_value)

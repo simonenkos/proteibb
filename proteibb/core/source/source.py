@@ -1,6 +1,7 @@
-from properties import *
+from proteibb.core.source.properties import *
+from proteibb.util.property_handler import PropertyHandler
 
-class Source:
+class Source(PropertyHandler):
     """
     Example of source config file:
     {
@@ -25,16 +26,15 @@ class Source:
                 "branch"  : "release_1_1",
                 "version" : "1.1"
                 "dependencies" : [ "lib_a:>0.0.9:<0.1.9", "lib_b:=1.1", "lib_c" ],
+                // production-specific options
             },
         ],
         "user" : [
             {
                 "branch" : "new_feature_1",
                 "version" : "1.3",
+                "dependencies" : [ "lib_d:>1.0" ],
                 // user-specific options
-                "dep-branch" : "trunk",
-                "dependencies" : [ "lib_d:>1.0" ]
-
             }
         ],
     }
@@ -43,42 +43,45 @@ class Source:
     """
 
     def __init__(self, data, details):
-        prop_list = [
-            StringProperty('name'),
-            VcsProperty(),
-            UrlProperty(),
-            StringProperty('branch', True, True),
-            StringProperty('revision', False, True),
-            VersionProperty(),
-            DependenciesProperty(),
-        ]
-        self._properties = {}
-        for prop in prop_list:
-            self._properties[prop.get_name()] = prop
+        PropertyHandler.__init__(self)
+        # set up values to properties according to configuration in 'data' and 'details'
+        for prop_name, prop in self._properties.items():
+            if prop.is_detail_specific():
+                value = details.get(prop_name, None)
+            else:
+                value = data.get(prop_name, None)
+            if not prop.is_optional() and not value:
+                raise SyntaxError("no required property with name '" + prop_name + "' was found")
+            elif value:
+                prop.set_value(value)
 
-    def get_property(self, property_name):
-        return self._properties[property_name]
+    @PropertyHandler.declare_property(StringProperty, is_optional=False, is_detail_specific=False)
+    def name(self):
+        pass
 
-    # def get_name(self):
-    #     return self._properties['name']
-    #
-    # def get_vcs(self):
-    #     return self._properties['vcs']
-    #
-    # def get_url(self):
-    #     return self._url
-    #
-    # def get_branch(self):
-    #     return self._branch
-    #
-    # def get_version(self):
-    #     return self._version
-    #
-    # def get_dependencies(self):
-    #     return self._dependencies
+    @PropertyHandler.declare_property(VcsProperty)
+    def vcs(self):
+        pass
+
+    @PropertyHandler.declare_property(UrlProperty)
+    def url(self):
+        pass
+
+    @PropertyHandler.declare_property(StringProperty, is_optional=True, is_detail_specific=True)
+    def branch(self):
+        pass
+
+    @PropertyHandler.declare_property(StringProperty, is_optional=True, is_detail_specific=True)
+    def revision(self):
+        pass
+
+    @PropertyHandler.declare_property(VersionProperty)
+    def version(self):
+        pass
+
+    @PropertyHandler.declare_property(DependenciesProperty)
+    def dependencies(self):
+        pass
 
     def get_change_source(self):
-        raise NotImplementedError()
-
-    def get_sources(self):
         raise NotImplementedError()

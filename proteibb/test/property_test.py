@@ -1,18 +1,18 @@
 import unittest
 
-from proteibb.core import source
+from proteibb.core.source import properties
 
 class PropertyTestCase(unittest.TestCase):
 
     def test_string_property(self):
-        sp = source.StringProperty('name')
+        sp = properties.StringProperty('name')
         self.assertEqual(sp.get_name(), 'name')
         self.assertRaises(SyntaxError, sp.set_value, 12345)
         self.assertEqual(sp.set_value('string'), None)
         self.assertEqual(sp.get_value(), 'string')
 
     def test_url_property(self):
-        up = source.UrlProperty()
+        up = properties.UrlProperty()
         self.assertEqual(up.get_name(), 'url')
         self.assertEqual(up.is_optional(), False)
         self.assertRaises(SyntaxError, up.set_value, 12345)
@@ -25,7 +25,7 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(up.get_value(), 'http://svn.server.com/db')
 
     def test_vcs_property(self):
-        vp = source.VcsProperty()
+        vp = properties.VcsProperty()
         self.assertEqual(vp.get_name(), 'vcs')
         self.assertEqual(vp.is_optional(), False)
         self.assertRaises(SyntaxError, vp.set_value, 12345)
@@ -40,7 +40,7 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(vp.get_value(), 'hg')
 
     def test_version_property(self):
-        vp = source.VersionProperty()
+        vp = properties.VersionProperty()
         self.assertEqual(vp.get_name(), 'version')
         self.assertEqual(vp.is_optional(), True)
         self.assertRaises(SyntaxError, vp.set_value, 123456)
@@ -59,7 +59,7 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(vp.get_value(), [])
 
     def test_dependencies_property(self):
-        dp = source.DependenciesProperty()
+        dp = properties.DependenciesProperty()
         self.assertEqual(dp.get_name(), 'dependencies')
         self.assertEqual(dp.is_optional(), True)
         self.assertRaises(SyntaxError, dp.set_value, 12345)

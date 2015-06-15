@@ -15,26 +15,26 @@ class SourceProperty(Property):
 
 class StringProperty(SourceProperty):
 
-    def __init__(self, string, is_optional=False, is_detail_specific=False):
-        SourceProperty.__init__(self, string, "", is_optional, is_detail_specific)
+    def __init__(self, name, is_optional=False, is_detail_specific=False):
+        SourceProperty.__init__(self, name, "", is_optional, is_detail_specific)
         self._set_validator(lambda val: isinstance(val, str))
 
 class UrlProperty(SourceProperty):
 
-    def __init__(self):
-        SourceProperty.__init__(self, 'url', "")
+    def __init__(self, name):
+        SourceProperty.__init__(self, name, "")
         self._set_validator(lambda val: isinstance(val, str) and len(val) and rfc3987.match(val, 'URI') is not None)
 
 class VcsProperty(SourceProperty):
 
-    def __init__(self):
-        SourceProperty.__init__(self, 'vcs', "")
+    def __init__(self, name):
+        SourceProperty.__init__(self, name, "")
         self._set_validator(lambda val: isinstance(val, str) and len(val) and val in ['svn', 'git', 'hg'])
 
 class VersionProperty(SourceProperty):
 
-    def __init__(self):
-        SourceProperty.__init__(self, 'version', [], True, True)
+    def __init__(self, name):
+        SourceProperty.__init__(self, name, [], True, True)
         validate = lambda val: isinstance(val, str) and (not len(val) or re.match('^(?:\d+)(?:\.\d+)*$', val))
         self._set_validator(validate)
 
@@ -46,8 +46,8 @@ class VersionProperty(SourceProperty):
 
 class DependenciesProperty(SourceProperty):
 
-    def __init__(self):
-        SourceProperty.__init__(self, 'dependencies', [], True, True)
+    def __init__(self, name):
+        SourceProperty.__init__(self, name, [], True, True)
 
         def validate(val):
             if not isinstance(val, list):

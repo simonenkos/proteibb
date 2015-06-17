@@ -1,38 +1,29 @@
-class Project:
+from proteibb.util.property_handler import PropertyHandler
+
+class Project(PropertyHandler):
+
     """
-    ToDo add description
-    """
+    Example of project configuration json file:
+    {
+        "name" : "project",
+        "platform" : [
+            "arm",
+            "x86",
+        ]
+        "source" : "project_source_name"
+        
+    }
 
-    class ConfigurationException(Exception):
-
-        def __init__(self, message):
-            self.message = message
-
-        def __str__(self):
-            return self.message
-
-    def __init__(self, project_name, project_path, project_type, description, updates):
-        self._path = project_path
-        self._name = project_name
-        self._type = project_type
-        self._description = description
-        self._updates = updates
-
-def make_project(project_name, project_path, project_data):
-    """
-    Creates an object that keeps information about project.
-
-    :param project_path:
-    :param project_name:
-    :param project_type:
-    :param project_data:
-    :return:
     """
 
-    info = project_data.get("info")
-    updates = project_data.get("updates")
+    def __init__(self, data):
+        PropertyHandler.__init__(self)
+        # Set up values of properties from configuration.
+        for prop_name, prop in self._properties:
+            value = data[prop_name]
+            if not prop.is_optional() and not value:
+                raise
 
-    if not info:
-        raise Project.ConfigurationException("No 'info' section!")
-    if not updates:
-        raise Project.ConfigurationException("No 'updates' section!")
+    @PropertyHandler.declare_property()
+    def name(self):
+        pass

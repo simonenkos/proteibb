@@ -44,7 +44,7 @@ class Source(PropertyHandler):
 
     def __init__(self, data, details):
         PropertyHandler.__init__(self)
-        # set up values to properties according to configuration in 'data' and 'details'
+        # Set up values to properties according to a configuration in 'data' and 'details'.
         for prop_name, prop in self._properties.items():
             if prop.is_detail_specific():
                 value = details.get(prop_name, None)
@@ -55,7 +55,7 @@ class Source(PropertyHandler):
             elif value:
                 prop.set_value(value)
 
-    @PropertyHandler.declare_property(StringProperty, is_optional=False, is_detail_specific=False)
+    @PropertyHandler.declare_property(StringProperty, True)
     def name(self):
         pass
 
@@ -67,11 +67,11 @@ class Source(PropertyHandler):
     def url(self):
         pass
 
-    @PropertyHandler.declare_property(StringProperty, is_optional=True, is_detail_specific=True)
+    @PropertyHandler.declare_property(DetailStringProperty, True)
     def branch(self):
         pass
 
-    @PropertyHandler.declare_property(StringProperty, is_optional=True, is_detail_specific=True)
+    @PropertyHandler.declare_property(DetailStringProperty, True)
     def revision(self):
         pass
 
@@ -83,5 +83,5 @@ class Source(PropertyHandler):
     def dependencies(self):
         pass
 
-    def get_change_source(self):
+    def get_change_source(self, configuration):
         raise NotImplementedError()

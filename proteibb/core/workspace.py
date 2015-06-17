@@ -3,8 +3,8 @@ import json
 from os import listdir
 from os.path import isfile, join, splitext
 
-from proteibb.core.project import *
-from proteibb.core.source import *
+from proteibb.core.project.project import Project
+from proteibb.core.source import source_factory
 
 class Workspace:
     """
@@ -15,6 +15,7 @@ class Workspace:
     workspace_structure = ['configuration', 'projects', 'sources']
 
     def __init__(self, base_path):
+        self._configuration = None
         self._projects = []
         self._sources = []
 
@@ -37,12 +38,13 @@ class Workspace:
                     entry_data = json.load(data_file)
                     creation_callback(entry_data)
 
-    # def _add_configuration(self, cname, cpath, cdata):
-    #     pass
-    #
-    # def _add_projects(self, pname, ppath, pdata):
-    #     project = make_project(pname, ppath, pdata)
-    #     self._projects.append(project)
+    def _add_configuration(self, data):
+        self._configuration = Configuration(data)
+
+    def _add_projects(self, data):
+        project = Project(data)
+        project.setup(self._configuration, self._sources)
+        self._projects.append(project)
 
     def _add_sources(self, data):
         sources = source_factory.make(data)

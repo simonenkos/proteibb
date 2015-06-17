@@ -1,8 +1,10 @@
 from proteibb.util import *
-from dependency import *
+from dependency import Dependency
 
 import rfc3987
 import re
+
+# Common properties.
 
 class SourceProperty(Property):
 
@@ -19,22 +21,30 @@ class StringProperty(SourceProperty):
         SourceProperty.__init__(self, name, "", is_optional, is_detail_specific)
         self._set_validator(lambda val: isinstance(val, str))
 
-class UrlProperty(SourceProperty):
+class DetailStringProperty(StringProperty):
 
     def __init__(self, name):
-        SourceProperty.__init__(self, name, "")
+        StringProperty.__init__(self, name, True, True)
+
+
+# Source properties specializations.
+
+class UrlProperty(SourceProperty):
+
+    def __init__(self):
+        SourceProperty.__init__(self, 'url', "")
         self._set_validator(lambda val: isinstance(val, str) and len(val) and rfc3987.match(val, 'URI') is not None)
 
 class VcsProperty(SourceProperty):
 
-    def __init__(self, name):
-        SourceProperty.__init__(self, name, "")
+    def __init__(self):
+        SourceProperty.__init__(self, 'vcs', "")
         self._set_validator(lambda val: isinstance(val, str) and len(val) and val in ['svn', 'git', 'hg'])
 
 class VersionProperty(SourceProperty):
 
-    def __init__(self, name):
-        SourceProperty.__init__(self, name, [], True, True)
+    def __init__(self):
+        SourceProperty.__init__(self, 'version', [], True, True)
         validate = lambda val: isinstance(val, str) and (not len(val) or re.match('^(?:\d+)(?:\.\d+)*$', val))
         self._set_validator(validate)
 
@@ -46,8 +56,8 @@ class VersionProperty(SourceProperty):
 
 class DependenciesProperty(SourceProperty):
 
-    def __init__(self, name):
-        SourceProperty.__init__(self, name, [], True, True)
+    def __init__(self):
+        SourceProperty.__init__(self, 'dependencies', [], True, True)
 
         def validate(val):
             if not isinstance(val, list):

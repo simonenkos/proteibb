@@ -1,10 +1,9 @@
-class _SourceFactory:
+from proteibb.util.simple_factory import SimpleFactory
+
+class SourceFactory(SimpleFactory):
 
     def __init__(self):
-        self._registry = []
-
-    def register(self, cls):
-        self._registry.append(cls)
+        SimpleFactory.__init__(self)
 
     def make(self, data):
         sources = []
@@ -17,8 +16,5 @@ class _SourceFactory:
                 sources.append(cls(data, details))
         return sources
 
-source_factory = _SourceFactory()
-
-def add_source_factory(cls):
-    source_factory.register(cls)
-    return cls
+# Create sources factory instance.
+source_factory = SourceFactory()

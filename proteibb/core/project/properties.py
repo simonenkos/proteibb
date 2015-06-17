@@ -1,6 +1,2 @@
-from proteibb.util import *
+from proteibb.util.property import Property, StringProperty
 
-class StringProperty(Property):
-
-    def __init__(self):
-        pass

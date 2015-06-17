@@ -1,63 +1,69 @@
-from proteibb.util import *
+from proteibb.util.property import Property, StringProperty
 from dependency import Dependency
 
 import rfc3987
 import re
 
-# Common properties.
+# Common properties and mixins.
 
-class SourceProperty(Property):
+class DetailedPropertyMixin:
 
-    def __init__(self, name, default_value, is_optional=False, is_detail_specific=False):
-        Property.__init__(self, name, default_value, is_optional)
+    def __init__(self, is_detail_specific):
         self._is_detail_specific = is_detail_specific
 
     def is_detail_specific(self):
         return self._is_detail_specific
 
-class StringProperty(SourceProperty):
+class DetailedStringProperty(StringProperty, DetailedPropertyMixin):
 
-    def __init__(self, name, is_optional=False, is_detail_specific=False):
-        SourceProperty.__init__(self, name, "", is_optional, is_detail_specific)
-        self._set_validator(lambda val: isinstance(val, str))
-
-class DetailStringProperty(StringProperty):
-
-    def __init__(self, name):
-        StringProperty.__init__(self, name, True, True)
+    def __init__(self, name, is_optional=True, is_detail_specific=True):
+        StringProperty.__init__(self, name, is_optional)
+        DetailedPropertyMixin.__init__(self, is_detail_specific)
 
 
 # Source properties specializations.
 
-class UrlProperty(SourceProperty):
+class UrlProperty(Property, DetailedPropertyMixin):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'url', "")
+        Property.__init__(self, 'url', "")
+        DetailedPropertyMixin.__init__(self, False)
         self._set_validator(lambda val: isinstance(val, str) and len(val) and rfc3987.match(val, 'URI') is not None)
 
-class VcsProperty(SourceProperty):
+class VcsProperty(Property, DetailedPropertyMixin):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'vcs', "")
+        Property.__init__(self, 'vcs', "")
+        DetailedPropertyMixin.__init__(self, False)
         self._set_validator(lambda val: isinstance(val, str) and len(val) and val in ['svn', 'git', 'hg'])
 
-class VersionProperty(SourceProperty):
+class VersionsProperty(Property, DetailedPropertyMixin):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'version', [], True, True)
-        validate = lambda val: isinstance(val, str) and (not len(val) or re.match('^(?:\d+)(?:\.\d+)*$', val))
+        Property.__init__(self, 'versions', [], True)
+        DetailedPropertyMixin.__init__(self, True)
+
+        def validate(val):
+            if not isinstance(val, list):
+                return False
+            for version in val:
+                if not isinstance(version, str) or not (len(version) and re.match('^(?:\d+)(?:\.\d+)*$', version)):
+                    return False
+            return True
+
         self._set_validator(validate)
 
     def _apply_new_value(self, value):
         version = []
-        if len(value):
-            version = split_version(value)
-        SourceProperty._apply_new_value(self, version)
+        for v in value:
+            version.append(split_version(v))
+        Property._apply_new_value(self, version)
 
-class DependenciesProperty(SourceProperty):
+class DependenciesProperty(Property, DetailedPropertyMixin):
 
     def __init__(self):
-        SourceProperty.__init__(self, 'dependencies', [], True, True)
+        Property.__init__(self, 'dependencies', [], True)
+        DetailedPropertyMixin.__init__(self, True)
 
         def validate(val):
             if not isinstance(val, list):
@@ -79,4 +85,4 @@ class DependenciesProperty(SourceProperty):
                 q = version[0]
                 d.add_version(v, q)
             dependencies.append(d)
-        SourceProperty._apply_new_value(self, dependencies)
+        Property._apply_new_value(self, dependencies)

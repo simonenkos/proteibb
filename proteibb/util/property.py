@@ -20,13 +20,18 @@ class Property:
             raise NotImplementedError()
         if not self._is_optional and not val:
             raise SyntaxError("no required property with name '" + self._name + "' was found")
-        if val:
-            if not self._property_validator(val):
-                raise SyntaxError("invalid value for '" + self._name + "' property")
-            self._apply_new_value(val)
+        if not self._property_validator(val):
+            raise SyntaxError("invalid value for '" + self._name + "' property")
+        self._apply_new_value(val)
 
     def _set_validator(self, validator):
         self._property_validator = validator
 
     def _apply_new_value(self, value):
         self._value = value
+
+class StringProperty(Property):
+
+    def __init__(self, name, is_optional=False):
+        Property.__init__(self, name, "", is_optional)
+        self._set_validator(lambda val: isinstance(val, str))

@@ -1,6 +1,6 @@
 from proteibb.core.source import source as src
 from proteibb.core.source import source_factory
-from proteibb.core.source.properties import DetailStringProperty
+from proteibb.core.source.properties import DetailedStringProperty
 from proteibb.util.property_handler import PropertyHandler
 from proteibb.util.simple_factory import register_at_factory
 
@@ -10,7 +10,7 @@ class User(src.Source):
     def __init__(self, data, details):
         src.Source.__init__(self, data, details)
 
-    @PropertyHandler.declare_property(DetailStringProperty, True)
+    @PropertyHandler.declare_property(DetailedStringProperty, True)
     def specification(self):
         pass
 

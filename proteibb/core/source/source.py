@@ -55,7 +55,7 @@ class Source(PropertyHandler):
             elif value:
                 prop.set_value(value)
 
-    @PropertyHandler.declare_property(StringProperty, True)
+    @PropertyHandler.declare_property(DetailedStringProperty, True, is_optional=False, is_detail_specific=False)
     def name(self):
         pass
 
@@ -67,16 +67,16 @@ class Source(PropertyHandler):
     def url(self):
         pass
 
-    @PropertyHandler.declare_property(DetailStringProperty, True)
+    @PropertyHandler.declare_property(DetailedStringProperty, True)
     def branch(self):
         pass
 
-    @PropertyHandler.declare_property(DetailStringProperty, True)
+    @PropertyHandler.declare_property(DetailedStringProperty, True)
     def revision(self):
         pass
 
-    @PropertyHandler.declare_property(VersionProperty)
-    def version(self):
+    @PropertyHandler.declare_property(VersionsProperty)
+    def versions(self):
         pass
 
     @PropertyHandler.declare_property(DependenciesProperty)

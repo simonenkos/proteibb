@@ -1,4 +1,5 @@
 from proteibb.util.property import Property, StringProperty
+from proteibb.util import split_version
 from dependency import Dependency
 
 import rfc3987

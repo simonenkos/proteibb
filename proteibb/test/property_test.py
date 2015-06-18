@@ -1,12 +1,14 @@
 import unittest
 
 from proteibb.core.source import properties
+from proteibb.util.property import *
 
 class PropertyTestCase(unittest.TestCase):
 
     def test_detailed_string_property(self):
         sp = properties.DetailedStringProperty('name')
         self.assertEqual(sp.get_name(), 'name')
+        self.assertEqual(sp.get_value(), "")
         self.assertRaises(SyntaxError, sp.set_value, 12345)
         self.assertEqual(sp.set_value('string'), None)
         self.assertEqual(sp.get_value(), 'string')
@@ -16,6 +18,7 @@ class PropertyTestCase(unittest.TestCase):
     def test_url_property(self):
         up = properties.UrlProperty()
         self.assertEqual(up.get_name(), 'url')
+        self.assertEqual(up.get_value(), "")
         self.assertEqual(up.is_optional(), False)
         self.assertEqual(up.is_detail_specific(), False)
         self.assertRaises(SyntaxError, up.set_value, 12345)
@@ -30,6 +33,7 @@ class PropertyTestCase(unittest.TestCase):
     def test_vcs_property(self):
         vp = properties.VcsProperty()
         self.assertEqual(vp.get_name(), 'vcs')
+        self.assertEqual(vp.get_value(), "")
         self.assertEqual(vp.is_optional(), False)
         self.assertEqual(vp.is_detail_specific(), False)
         self.assertRaises(SyntaxError, vp.set_value, 12345)
@@ -46,6 +50,7 @@ class PropertyTestCase(unittest.TestCase):
     def test_version_property(self):
         vp = properties.VersionsProperty()
         self.assertEqual(vp.get_name(), 'versions')
+        self.assertEqual(vp.get_value(), [])
         self.assertEqual(vp.is_optional(), True)
         self.assertEqual(vp.is_detail_specific(), True)
         self.assertRaises(SyntaxError, vp.set_value, 123456)
@@ -67,6 +72,7 @@ class PropertyTestCase(unittest.TestCase):
     def test_dependencies_property(self):
         dp = properties.DependenciesProperty()
         self.assertEqual(dp.get_name(), 'dependencies')
+        self.assertEqual(dp.get_value(), [])
         self.assertEqual(dp.is_optional(), True)
         self.assertEqual(dp.is_detail_specific(), True)
         self.assertRaises(SyntaxError, dp.set_value, 12345)
@@ -100,6 +106,18 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(dp.set_value(['lib_d:=2.0:>2.0']), None)
         self.assertEqual(dp.get_value()[0].get_name(), 'lib_d')
         self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[2, 0]], 'min': [2, 0], 'max': None})
+
+    def test_string_list_property(self):
+        slp = StringsListProperty('slp')
+        self.assertEqual(slp.get_name(), 'slp')
+        self.assertEqual(slp.is_optional(), False)
+        self.assertRaises(SyntaxError, slp.set_value, '')
+        self.assertRaises(SyntaxError, slp.set_value, 12345)
+        self.assertRaises(SyntaxError, slp.set_value, [""])
+        self.assertRaises(SyntaxError, slp.set_value, ['x86', ''])
+        self.assertRaises(SyntaxError, slp.set_value, ['arm', 12345])
+        self.assertEqual(slp.set_value(['x86', 'arm']), None)
+        self.assertEqual(slp.get_value(), ['x86', 'arm'])
 
 if __name__ == '__main__':
     unittest.main()

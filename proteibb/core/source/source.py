@@ -50,10 +50,7 @@ class Source(PropertyHandler):
                 value = details.get(prop_name, None)
             else:
                 value = data.get(prop_name, None)
-            if not prop.is_optional() and not value:
-                raise SyntaxError("no required property with name '" + prop_name + "' was found")
-            elif value:
-                prop.set_value(value)
+            prop.set_value(value)
 
     @PropertyHandler.declare_property(DetailedStringProperty, True, is_optional=False, is_detail_specific=False)
     def name(self):

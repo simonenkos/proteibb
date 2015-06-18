@@ -3,6 +3,7 @@ import json
 from os import listdir
 from os.path import isfile, join, splitext
 
+from proteibb.core.configuration.configuration import Configuration
 from proteibb.core.project.project import Project
 from proteibb.core.source import source_factory
 

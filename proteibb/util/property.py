@@ -20,9 +20,10 @@ class Property:
             raise NotImplementedError()
         if not self._is_optional and not val:
             raise SyntaxError("no required property with name '" + self._name + "' was found")
-        if not self._property_validator(val):
-            raise SyntaxError("invalid value for '" + self._name + "' property")
-        self._apply_new_value(val)
+        if val is not None:
+            if not self._property_validator(val):
+                raise SyntaxError("invalid value for '" + self._name + "' property")
+            self._apply_new_value(val)
 
     def _set_validator(self, validator):
         self._property_validator = validator
@@ -35,3 +36,16 @@ class StringProperty(Property):
     def __init__(self, name, is_optional=False):
         Property.__init__(self, name, "", is_optional)
         self._set_validator(lambda val: isinstance(val, str))
+
+class StringsListProperty(Property):
+    def __init__(self, name, is_optional=False):
+        Property.__init__(self, name, [], is_optional)
+
+        def validate(val):
+            if not isinstance(val, list):
+                return False
+            for p in val:
+                if not isinstance(p, str) or not len(p):
+                    return False
+            return True
+        self._set_validator(validate)

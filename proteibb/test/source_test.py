@@ -3,6 +3,10 @@ import unittest
 from proteibb.core.source import source as src
 from proteibb.core.source import source_factory
 
+from proteibb.core.source.details.automation import Automation
+from proteibb.core.source.details.production import Production
+from proteibb.core.source.details.user import User
+
 class SourceTestCase(unittest.TestCase):
 
     def test_source_properties_setup_all(self):

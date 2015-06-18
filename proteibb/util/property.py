@@ -31,13 +31,16 @@ class Property:
     def _apply_new_value(self, value):
         self._value = value
 
+
 class StringProperty(Property):
 
     def __init__(self, name, is_optional=False):
         Property.__init__(self, name, "", is_optional)
         self._set_validator(lambda val: isinstance(val, str))
 
+
 class StringsListProperty(Property):
+
     def __init__(self, name, is_optional=False):
         Property.__init__(self, name, [], is_optional)
 
@@ -49,3 +52,12 @@ class StringsListProperty(Property):
                     return False
             return True
         self._set_validator(validate)
+
+
+class EnumerationProperty(Property):
+
+    def __init__(self, name, enumeration, is_optional=False):
+        Property.__init__(self, name, "", is_optional)
+        if not isinstance(enumeration, list) or not enumeration:
+            raise SyntaxError("invalid enumeration for '" + name + "' property")
+        self._set_validator(lambda val: val in enumeration)

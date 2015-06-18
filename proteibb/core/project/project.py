@@ -1,6 +1,10 @@
-# from proteibb.core.project.properties import PlatformsProperty
+from proteibb.core.project.properties import *
+from proteibb.core.project.details import details_factory
 from proteibb.util.property_handler import PropertyHandler
 from proteibb.util.property import StringProperty, StringsListProperty
+
+# Register detail at factory.
+from proteibb.core.project.details.application import Application
 
 class ProjectSetupError(Exception):
     pass
@@ -11,48 +15,64 @@ class Project(PropertyHandler):
     Example of project configuration json file:
     {
         "name" : "project",
-        "source" : "project_source_name"
-        // Common properties.
-        "platforms" : [
-           "arm",
-           "x86",
-        ]
-        // Configuration options for user and productions builds.
-        "options" : [
-            "option_support_feature_x",
-            "option_support_feature_y",
-            "option_disable_feature_z",
-            // Other options.
-        ]
+        "type" : "library|application|test",
+        "vcs"  : "svn|git|hg",
+        "url"  : "http://url_to_repository",
+        "branches" : [
+            "branch-name-one",
+            "default-branch"
+        ],
+        "versions" : [
+            "a.b.c",
+            "a.b.d"
+        ],
+        "dependencies" : [
+            "projectx:=a.b",
+            "projecty",
+            "projectz:>3.0"
+        ],
+        // Options for project details.
     }
     """
 
     def __init__(self, data):
-        PropertyHandler.__init__(self)
-        # Set up values of properties from configuration.
-        for prop_name, prop in self._properties.items():
-            prop.set_value(data[prop_name])
+        properties = [
+            StringProperty('name'),
+            TypeProperty(),
+            VcsProperty(),
+            UrlProperty(),
+            StringsListProperty('branches', True),
+            VersionsProperty(),
+            DependenciesProperty()
+        ]
+        PropertyHandler.__init__(self, properties, data)
+        self._details = details_factory.make(self.type().get_value(), data)
         self._source_hierarchy = None
 
-    @PropertyHandler.declare_property(StringProperty, True)
+    @PropertyHandler.replace
     def name(self):
         pass
 
-    @PropertyHandler.declare_property(StringProperty, True)
-    def source(self):
+    @PropertyHandler.replace
+    def type(self):
         pass
 
-    @PropertyHandler.declare_property(StringsListProperty, True)
-    def platforms(self):
+    @PropertyHandler.replace
+    def vcs(self):
         pass
 
-    @PropertyHandler.declare_property(StringsListProperty, True)
-    def options(self):
+    @PropertyHandler.replace
+    def url(self):
         pass
 
-    def setup(self, configuration, sources):
-        src = filter(lambda s: s.get_name() == self.source(), sources)
-        if not src:
-            raise ProjectSetupError("source for the project was not found")
-        if len(src) > 1:
-            raise ProjectSetupError("not single source was found for the project")
+    @PropertyHandler.replace
+    def branches(self):
+        pass
+
+    @PropertyHandler.replace
+    def versions(self):
+        pass
+
+    @PropertyHandler.replace
+    def dependencies(self):
+        pass

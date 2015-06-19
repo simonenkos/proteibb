@@ -43,6 +43,16 @@ class VersionsProperty(Property):
             version.append(split_version(v))
         Property._apply_new_value(self, version)
 
+    def include_value(self, versions_list):
+        for version in versions_list:
+            if version not in self._value:
+                self._value.append(version)
+
+    def exclude_value(self, versions_list):
+        for version in versions_list:
+            if version in self._value:
+                self._value.remove(version)
+
 class DependenciesProperty(Property):
 
     def __init__(self):
@@ -68,3 +78,15 @@ class DependenciesProperty(Property):
                 d.add_version(v, q)
             dependencies.append(d)
         Property._apply_new_value(self, dependencies)
+
+    def include_value(self, dependency_list):
+        for incoming_dep in dependency_list:
+            for dep in self._value:
+                if incoming_dep.get_name() == dep.get_name():
+                    dep.add(incoming_dep)
+
+    def exclude_value(self, dependency_list):
+        for incoming_dep in dependency_list:
+            for dep in self._value:
+                if incoming_dep.get_name() == dep.get_name():
+                    dep.subtract(incoming_dep)

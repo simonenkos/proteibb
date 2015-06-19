@@ -5,6 +5,7 @@ from os.path import isfile, join, splitext
 
 from proteibb.core.configuration.configuration import Configuration
 from proteibb.core.project.project import Project
+from proteibb.core.project.detail import prepare_project_details
 
 class Workspace:
     """
@@ -14,7 +15,6 @@ class Workspace:
     def __init__(self, base_path):
         self._configuration = None
         self._projects = []
-        self._sources = []
 
         if not base_path.endwith('/'):
             base_path.append('/')
@@ -39,6 +39,11 @@ class Workspace:
         self._configuration = Configuration(data)
 
     def _add_projects(self, data):
-        project = Project(data)
-        # project.setup(self._configuration, self._sources)
-        self._projects.append(project)
+        details = prepare_project_details(data) # ToDo to project-detail factory
+        for d in details:
+            project = Project(data, d)
+            # project.setup(self._configuration) # ToDo
+            self._projects.append(project)
+
+    def get_projects(self, project_filter):
+        return project_filter(self._projects)

@@ -1,16 +1,11 @@
 from proteibb.core.project.properties import *
-from proteibb.core.project.details import details_factory
 from proteibb.util.property_handler import PropertyHandler
 from proteibb.util.property import StringProperty, StringsListProperty
-
-# Register detail at factory.
-from proteibb.core.project.details.application import Application
 
 class ProjectSetupError(Exception):
     pass
 
 class Project(PropertyHandler):
-
     """
     Example of project configuration json file:
     {
@@ -18,36 +13,72 @@ class Project(PropertyHandler):
         "type" : "library|application|test",
         "vcs"  : "svn|git|hg",
         "url"  : "http://url_to_repository",
-        "branches" : [
-            "branch-name-one",
-            "default-branch"
+        // Common platforms list.
+        "platforms" : [
+            "arm",
+            "x86",
+            ...
         ],
-        "versions" : [
-            "a.b.c",
-            "a.b.d"
-        ],
+        // Common dependencies list.
         "dependencies" : [
             "projectx:=a.b",
             "projecty",
-            "projectz:>3.0"
+            "projectz:>c.d"
+        ],
+        // Common options list (for application type only).
+        "options" : [
+            "option_support_feature_x",
+            "option_support_feature_y",
+            "option_disable_feature_z",
+            ...
         ],
         // Options for project details.
+        "details" : [
+            {
+                "branch" : "branch_x",
+                "versions" : [
+                    "a.b.c",
+                    "d.e.f"
+                ],
+                "includes" : {
+                    "platforms" : [
+                        "mips"
+                    ],
+                    "options" : [
+                        "option_disable_fix_a"
+                    ],
+                    "dependencies" : [
+                        "projectq:<a.b.c.d.e"
+                    ]
+                }
+                "excludes" : {
+                    // Same as 'includes' section.
+                }
+            },
+            {
+                "branch" : 'branch_z",
+                "versions" : [
+                    "a.b.c"
+                ]
+            },
+        ]
     }
     """
-
-    def __init__(self, data):
+    def __init__(self, data, detail):
         properties = [
             StringProperty('name'),
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            StringsListProperty('branches', True),
+            StringsListProperty('platforms'),
+            StringProperty('branch', True),
             VersionsProperty(),
-            DependenciesProperty()
+            DependenciesProperty(),
+            StringsListProperty('options', True)
         ]
         PropertyHandler.__init__(self, properties, data)
-        self._details = details_factory.make(self.type().get_value(), data)
-        self._source_hierarchy = None
+        # Customize current project according to specific details.
+        detail.modify(self._properties)
 
     @PropertyHandler.replace
     def name(self):
@@ -66,6 +97,10 @@ class Project(PropertyHandler):
         pass
 
     @PropertyHandler.replace
+    def platforms(self):
+        pass
+
+    @PropertyHandler.replace
     def branches(self):
         pass
 
@@ -75,4 +110,8 @@ class Project(PropertyHandler):
 
     @PropertyHandler.replace
     def dependencies(self):
+        pass
+
+    @PropertyHandler.replace
+    def options(self):
         pass

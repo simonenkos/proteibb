@@ -13,30 +13,40 @@ class ProjectTestCase(unittest.TestCase):
             'name': 'project',
             'type': 'library',
             'vcs': 'git',
-            'url': 'http://github.com/user/project'
+            'url': 'http://github.com/user/project',
+            'platforms': ['platformx', 'platformy']
         }
         p = project.Project(data)
-        self.assertEqual(p.name().get_value(), 'project')
-        self.assertEqual(p.type().get_value(), 'library')
-        self.assertEqual(p.vcs().get_value(), 'git')
-        self.assertEqual(p.url().get_value(), 'http://github.com/user/project')
-        self.assertEqual(p.branches().get_value(), [])
-        self.assertEqual(p.versions().get_value(), [])
-        self.assertEqual(p.dependencies().get_value(), [])
+        self.assertEqual(p.name(), 'project')
+        self.assertEqual(p.type(), 'library')
+        self.assertEqual(p.vcs(), 'git')
+        self.assertEqual(p.url(), 'http://github.com/user/project')
+        self.assertEqual(p.platforms(), ['platformx', 'platformy'])
+        self.assertEqual(p.branches(), [])
+        self.assertEqual(p.versions(), [])
+        self.assertEqual(p.dependencies(), [])
+        self.assertEqual(p.options(), [])
 
-    def test_project_application_empty_details(self):
+    def test_project_application(self):
         data = {
             'name': 'project',
-            'type': 'library',
-            'vcs': 'git',
-            'url': 'http://github.com/user/project',
+            'type': 'application',
+            'vcs': 'svn',
+            'url': 'http://subversion',
+            'platforms': ['platformx', 'platformy'],
             'branches': ['default'],
             'versions': ['1.0', '2.0'],
-            'platforms': ['platformx', 'platformy'],
             'options': ['optionx', 'optiony']
         }
         p = project.Project(data)
-        # ToDo
+        self.assertEqual(p.name(), 'project')
+        self.assertEqual(p.type(), 'application')
+        self.assertEqual(p.vcs(), 'svn')
+        self.assertEqual(p.url(), 'http://subversion')
+        self.assertEqual(p.platforms(), ['platformx', 'platformy'])
+        self.assertEqual(p.branches(), ['default'])
+        self.assertEqual(p.versions(), [[1, 0], [2, 0]])
+        self.assertEqual(p.options(), ['optionx', 'optiony'])
 
 if __name__ == '__main__':
     unittest.main()

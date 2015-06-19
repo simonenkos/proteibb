@@ -18,7 +18,7 @@ class SimpleFactory:
             objects.append(obj)
         return objects
 
-def register_at_factory(factory):
+def register_class(factory):
     def wrapper(cls):
         if not isinstance(factory, SimpleFactory):
             raise NoFactoryException()

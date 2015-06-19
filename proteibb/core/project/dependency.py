@@ -7,16 +7,17 @@ class Dependency:
         self._max = None
 
     def add_version(self, version, qualification):
-        if qualification is '=':
-            self._add_exact_version(version)
-        elif qualification is '>':
-            self._add_min(version)
-        elif qualification is '<':
-            self._add_max(version)
-        else:
-            raise SyntaxError("invalid version (" + str(version)
-                              + ") qualification '" + qualification
-                              + "' for dependency: " + self._name)
+        if version:
+            if qualification is '=':
+                self._add_exact_version(version)
+            elif qualification is '>':
+                self._add_min(version)
+            elif qualification is '<':
+                self._add_max(version)
+            else:
+                raise SyntaxError("invalid version (" + str(version)
+                                  + ") qualification '" + qualification
+                                  + "' for dependency: " + self._name)
 
     def get_name(self):
         return self._name
@@ -25,6 +26,25 @@ class Dependency:
         return {'ver': self._exact,
                 'min': self._min,
                 'max': self._max}
+
+    def add(self, other):
+        if not isinstance(other, Dependency):
+            raise TypeError("invalid type of dependency")
+        for v in other._exact:
+            self._add_exact_version(v)
+        self._add_min(other._min)
+        self._add_max(other._max)
+
+    def subtract(self, other):
+        if not isinstance(other, Dependency):
+            raise TypeError("invalid type of dependency")
+        for v in other._exact:
+            if v in self._exact:
+                self._exact.remove(v)
+        if self._min == other._min:
+            self._min = None
+        if self._max == other._max:
+            self._max = None
 
     def _add_exact_version(self, version):
         if self._min and version < self._min:

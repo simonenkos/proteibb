@@ -1,6 +1,7 @@
 import unittest
 
 from proteibb.core.project import properties
+from proteibb.util.property_handler import *
 from proteibb.util.property import *
 
 class PropertyTestCase(unittest.TestCase):
@@ -116,6 +117,37 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(dp.set_value(['lib_d:=2.0:>2.0']), None)
         self.assertEqual(dp.get_value()[0].get_name(), 'lib_d')
         self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[2, 0]], 'min': [2, 0], 'max': None})
+
+    def test_extensions_property(self):
+
+        class TestPropertyHandler(PropertyHandler):
+
+            def __init__(self,  data):
+                internal_props = [
+                    StringProperty('test-prop-str'),
+                    EnumerationProperty('test-prop-enum', ['a', 'b', 'c'], is_optional=True)
+                ]
+                PropertyHandler.__init__(self, internal_props, data)
+
+        ep = properties.ExtensionsProperty('extensions', TestPropertyHandler)
+        self.assertEqual(ep.get_name(), 'extensions')
+        self.assertEqual(ep.get_value(), {})
+        self.assertEqual(ep.is_optional(), True)
+        self.assertRaises(SyntaxError, ep.set_value, 12345)
+        self.assertRaises(SyntaxError, ep.set_value, '')
+        self.assertRaises(SyntaxError, ep.set_value, [])
+        self.assertRaises(SyntaxError, ep.set_value, {'': ''})
+        self.assertRaises(SyntaxError, ep.set_value, {'': []})
+        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 12345})
+        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 'abcde1', 'test-prop-enum': ''})
+        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 'abcde2', 'test-prop-enum': 'e'})
+        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-enum': 'a'})
+        self.assertEqual(ep.set_value({'test-prop-str': 'test-prop-str-value'}), None)
+        self.assertEqual(ep.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value')
+        self.assertEqual(ep.get_value()._properties['test-prop-enum'].get_value(), '')
+        self.assertEqual(ep.set_value({'test-prop-str': 'test-prop-str-value-two', 'test-prop-enum': 'b'}), None)
+        self.assertEqual(ep.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value-two')
+        self.assertEqual(ep.get_value()._properties['test-prop-enum'].get_value(), 'b')
 
 if __name__ == '__main__':
     unittest.main()

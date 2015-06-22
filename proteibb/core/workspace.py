@@ -39,7 +39,7 @@ class Workspace:
         self._configuration = Configuration(data)
 
     def _add_projects(self, data):
-        details = prepare_project_details(data) # ToDo to project-detail factory
+        details = prepare_project_details(data)
         for d in details:
             project = Project(data, d)
             # project.setup(self._configuration) # ToDo

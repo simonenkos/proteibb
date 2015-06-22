@@ -90,3 +90,13 @@ class DependenciesProperty(Property):
             for dep in self._value:
                 if incoming_dep.get_name() == dep.get_name():
                     dep.subtract(incoming_dep)
+
+class ExtensionsProperty(Property):
+
+    def __init__(self, name, extensions_property_handler_cls):
+        Property.__init__(self, name, {}, True)
+        self._extensions_property_handler_cls = extensions_property_handler_cls
+        self._set_validator(lambda val: isinstance(val, dict))
+
+    def _apply_new_value(self, value):
+        self._value = self._extensions_property_handler_cls(value)

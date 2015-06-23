@@ -9,11 +9,16 @@ class Dependency:
     def add_version(self, version, qualification):
         if version:
             if qualification is '=':
-                self._add_exact_version(version)
+                if version not in self._exact:
+                    self._exact.append(version)
             elif qualification is '>':
-                self._add_min(version)
+                if self._max and self._max < version:
+                    raise SyntaxError("version conflict: 'max' is smaller than 'min'")
+                self._min = version
             elif qualification is '<':
-                self._add_max(version)
+                if self._min and self._min > version:
+                    raise SyntaxError("version conflict: 'min' is bigger than 'max'")
+                self._max = version
             else:
                 raise SyntaxError("invalid version (" + str(version)
                                   + ") qualification '" + qualification
@@ -31,9 +36,10 @@ class Dependency:
         if not isinstance(other, Dependency):
             raise TypeError("invalid type of dependency")
         for v in other._exact:
-            self._add_exact_version(v)
-        self._add_min(other._min)
-        self._add_max(other._max)
+            if v not in self._exact:
+                self._exact.append(v)
+        self._max = other._max
+        self._min = other._min
 
     def subtract(self, other):
         if not isinstance(other, Dependency):
@@ -45,33 +51,4 @@ class Dependency:
             self._min = None
         if self._max == other._max:
             self._max = None
-
-    def _add_exact_version(self, version):
-        if self._min and version < self._min:
-            raise SyntaxError("dependency '" + self._name +
-                              "' version conflict: " + str(version) +
-                              " and min " + str(self._min))
-        if self._max and version > self._max:
-            raise SyntaxError("dependency '" + self._name +
-                              "' version conflict: " + str(version) +
-                              " and max " + str(self._max))
-        if version not in self._exact:
-            self._exact.append(version)
-
-    def _add_min(self, version):
-        if not self._min or version > self._min:
-            if self._max and version >= self._max:
-                raise SyntaxError("dependency '" + self._name +
-                                  "' version conflict: min " + str(version) +
-                                  " and max " + str(self._max))
-            self._exact = [v for v in self._exact if v >= version]
-            self._min = version
-
-    def _add_max(self, version):
-        if not self._max or version < self._max:
-            if self._min and version <= self._min:
-                raise SyntaxError("dependency '" + self._name +
-                                  "' version conflict: max " + str(version) +
-                                  " and min " + str(self._min))
-            self._exact = [v for v in self._exact if v <= version]
-            self._max = version
+        return not self._exact and not self._min and self._max

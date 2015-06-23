@@ -102,6 +102,7 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, dp.set_value, ['lib_a>1.0.0'])
         self.assertRaises(SyntaxError, dp.set_value, ['lib_a3.1'])
         self.assertRaises(SyntaxError, dp.set_value, ['lib_a:>1.5.0:<1.2.5'])
+        self.assertRaises(SyntaxError, dp.set_value, ['lib_a:<4.2:>4.7'])
         self.assertEqual(dp.set_value(['lib_a']), None)
         self.assertEqual(dp.get_value()[0].get_name(), 'lib_a')
         self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [], 'min': None, 'max': None})
@@ -113,10 +114,17 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [], 'min': [1, 0], 'max': [2, 0]})
         self.assertEqual(dp.set_value(['lib_c:=1.0:>2.0']), None)
         self.assertEqual(dp.get_value()[0].get_name(), 'lib_c')
-        self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [], 'min': [2, 0], 'max': None})
+        self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[1, 0]], 'min': [2, 0], 'max': None})
         self.assertEqual(dp.set_value(['lib_d:=2.0:>2.0']), None)
         self.assertEqual(dp.get_value()[0].get_name(), 'lib_d')
         self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[2, 0]], 'min': [2, 0], 'max': None})
+        self.assertEqual(dp.set_value(['lib_e:=1.0:=1.3:>2.0']), None)
+        self.assertEqual(dp.get_value()[0].get_name(), 'lib_e')
+        self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[1, 0], [1, 3]], 'min': [2, 0], 'max': None})
+        self.assertEqual(dp.set_value(['lib_f:<1.0.5:=1.0.7:=1.1.14']), None)
+        self.assertEqual(dp.get_value()[0].get_name(), 'lib_f')
+        self.assertEqual(dp.get_value()[0].get_versions(), {'ver': [[1, 0, 7], [1, 1, 14]],
+                                                            'min': None, 'max': [1, 0, 5]})
 
     def test_extensions_property(self):
 
@@ -131,7 +139,7 @@ class PropertyTestCase(unittest.TestCase):
 
         ep = properties.ExtensionsProperty('extensions', TestPropertyHandler)
         self.assertEqual(ep.get_name(), 'extensions')
-        self.assertEqual(ep.get_value(), {})
+        self.assertEqual(ep.get_value(), None)
         self.assertEqual(ep.is_optional(), True)
         self.assertRaises(SyntaxError, ep.set_value, 12345)
         self.assertRaises(SyntaxError, ep.set_value, '')

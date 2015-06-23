@@ -8,15 +8,15 @@ class Detail(PropertyHandler):
 
         def __init__(self, data):
             properties = [
-                EnumerationProperty('platforms', is_optional=True),
-                VersionsProperty(),
+                StringsListProperty('platforms', is_optional=True),
+                StringsListProperty('options', is_optional=True),
                 DependenciesProperty()
             ]
             PropertyHandler.__init__(self, properties, data)
 
     def __init__(self, data):
         properties = [
-            StringProperty('branch', True),
+            StringProperty('branch', is_optional=False),
             VersionsProperty(),
             ExtensionsProperty('includes', Detail.Extensions),
             ExtensionsProperty('excludes', Detail.Extensions),
@@ -24,17 +24,13 @@ class Detail(PropertyHandler):
         PropertyHandler.__init__(self, properties, data)
 
     def modify(self, properties_map):
+        def set_extensions(name, change_policy):
+            ext = self._properties[name].get_value()
+            if ext:
+                ext.apply_change_policy(properties_map, change_policy)
         self.apply_change_policy(properties_map, include_property_value)
-        self.includes().apply_change_policy(properties_map, include_property_value)
-        self.excludes().apply_change_policy(properties_map, exclude_property_value)
-
-    @PropertyHandler.replace
-    def includes(self):
-        pass
-
-    @PropertyHandler.replace
-    def excludes(self):
-        pass
+        set_extensions('includes', include_property_value)
+        set_extensions('excludes', exclude_property_value)
 
 def prepare_project_details(data):
     if not data:

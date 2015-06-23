@@ -8,7 +8,7 @@ class PropertyHandler:
 
     def __init__(self, properties, data):
         self._properties = {}
-        if not data:
+        if data is None:
             raise SyntaxError("empty property set")
         for prop in properties:
             prop_name = prop.get_name()
@@ -17,9 +17,9 @@ class PropertyHandler:
             self._properties[prop_name] = deepcopy(prop)
             self._properties[prop_name].set_value(data.get(prop_name, None))
 
-    def apply_change_policy(self, properties, change_policy):
-        for dst_prop in properties:
-            src_prop = self._properties.get(dst_prop.get_name(), None)
+    def apply_change_policy(self, properties_map, change_policy):
+        for dst_prop_name, dst_prop in properties_map.items():
+            src_prop = self._properties.get(dst_prop_name, None)
             if src_prop:
                 change_policy(dst_prop, src_prop)
 

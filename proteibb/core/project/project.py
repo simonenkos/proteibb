@@ -33,9 +33,11 @@ class Project(PropertyHandler):
             ...
         ],
         // Options for project details.
+        // It's optional section, but if provided it extends default properties.
+        // There are may be multiple details for which multiple projects will be created.
         "details" : [
             {
-                "branch" : "branch_x",
+                "branch" : "branch_x", // Not optional.
                 "versions" : [
                     "a.b.c",
                     "d.e.f"
@@ -71,13 +73,15 @@ class Project(PropertyHandler):
             VcsProperty(),
             UrlProperty(),
             StringsListProperty('platforms'),
-            StringProperty('branch', True),
+            StringProperty('branch', is_optional=True),
             VersionsProperty(),
             DependenciesProperty(),
             StringsListProperty('options', True)
         ]
         PropertyHandler.__init__(self, properties, data)
         # Customize current project according to specific details.
+        if not detail:
+            raise SyntaxError('invalid section of project details')
         detail.modify(self._properties)
 
     @PropertyHandler.replace
@@ -101,7 +105,7 @@ class Project(PropertyHandler):
         pass
 
     @PropertyHandler.replace
-    def branches(self):
+    def branch(self):
         pass
 
     @PropertyHandler.replace

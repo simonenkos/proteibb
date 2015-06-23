@@ -9,3 +9,8 @@ class Option:
 
     def get_data(self):
         return self._data
+
+class OptionGroup:
+
+    def __init__(self):
+        pass

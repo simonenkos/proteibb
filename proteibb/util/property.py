@@ -35,31 +35,41 @@ class Property:
     def _apply_new_value(self, value):
         self._value = value
 
+    class NoExpandException(Exception):
+        pass
+
     @staticmethod
-    def is_same_property(fst, snd):
-        if not isinstance(fst, Property) or not isinstance(snd, Property) or type(snd) != type(fst):
+    def is_available_for_extend(dst, src, method):
+        if not isinstance(dst, Property) or not isinstance(src, Property) or type(dst) != type(src):
             return False
-        if fst.get_name() != snd.get_name():
+        if dst.get_name() != src.get_name():
             return False
-        return True
+        # Check methods was implemented.
+        try:
+            method(None)
+            return True
+        except Property.NoExpandException:
+            return False
+        except:
+            return True
 
     def include_value(self, value):
-        raise ValueError("appending of values is not supported for a current property type")
+        raise Property.NoExpandException
 
     def exclude_value(self, value):
-        raise ValueError("removing of values is not supported for a current property type")
+        raise Property.NoExpandException
 
 # Property changing policies.
 
 def include_property_value(dst_prop, src_prop):
-    if not Property.is_same_property(dst_prop, src_prop):
-        raise TypeError('cannot append a new value to a property: type conflict')
-    dst_prop.append_value(src_prop)
+    if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
+        raise TypeError('cannot append a new value to a property: not available for extend')
+    dst_prop.include_value(src_prop.get_value())
 
 def exclude_property_value(dst_prop, src_prop):
-    if not Property.is_same_property(dst_prop, src_prop):
-        raise TypeError('cannot remove a value from a property: type conflict')
-    dst_prop.remove_value(src_prop)
+    if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
+        raise TypeError('cannot remove a value from a property: not available for extend')
+    dst_prop.exclude_value(src_prop.get_value())
 
 # Additional specialized properties.
 
@@ -87,14 +97,16 @@ class StringsListProperty(Property):
         self._set_validator(validate)
 
     def include_value(self, strings_list):
-        for string in strings_list:
-            if string not in self._value:
-                self._value.append(string)
+        if strings_list:
+            for string in strings_list:
+                if string not in self._value:
+                    self._value.append(string)
 
     def exclude_value(self, strings_list):
-        for string in strings_list:
-            if string in self._value:
-                self._value.remove(string)
+        if strings_list:
+            for string in strings_list:
+                if string in self._value:
+                    self._value.remove(string)
 
 class EnumerationProperty(Property):
 

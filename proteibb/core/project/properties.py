@@ -44,14 +44,8 @@ class VersionsProperty(Property):
         Property._apply_new_value(self, version)
 
     def include_value(self, versions_list):
-        for version in versions_list:
-            if version not in self._value:
-                self._value.append(version)
-
-    def exclude_value(self, versions_list):
-        for version in versions_list:
-            if version in self._value:
-                self._value.remove(version)
+        if versions_list:
+            self._value = versions_list
 
 class DependenciesProperty(Property):
 
@@ -80,21 +74,26 @@ class DependenciesProperty(Property):
         Property._apply_new_value(self, dependencies)
 
     def include_value(self, dependency_list):
-        for incoming_dep in dependency_list:
-            for dep in self._value:
-                if incoming_dep.get_name() == dep.get_name():
-                    dep.add(incoming_dep)
+        if dependency_list:
+            for incoming_dep in dependency_list:
+                for dep in self._value:
+                    if incoming_dep.get_name() == dep.get_name():
+                        dep.add(incoming_dep)
+                        return
+                self._value.append(incoming_dep)
 
     def exclude_value(self, dependency_list):
-        for incoming_dep in dependency_list:
-            for dep in self._value:
-                if incoming_dep.get_name() == dep.get_name():
-                    dep.subtract(incoming_dep)
+        if dependency_list:
+            for incoming_dep in dependency_list:
+                for dep in self._value:
+                    if incoming_dep.get_name() == dep.get_name():
+                        if dep.subtract(incoming_dep):
+                            self._value.remove(dep)
 
 class ExtensionsProperty(Property):
 
     def __init__(self, name, extensions_property_handler_cls):
-        Property.__init__(self, name, {}, True)
+        Property.__init__(self, name, None, True)
         self._extensions_property_handler_cls = extensions_property_handler_cls
         self._set_validator(lambda val: isinstance(val, dict))
 

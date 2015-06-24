@@ -113,18 +113,23 @@ class Property:
 class PropertyListAdapter(Property):
 
     def __init__(self, property_cls, name, is_optional=False):
-        Property.__init__(name, [], is_optional)
+        Property.__init__(self, name, [], is_optional)
         self._property_cls = property_cls
-        self._set_validator(lambda val: isinstance(val, list))
+        self._set_validator(lambda val: isinstance(val, list) and len(val))
 
     def _apply_new_value(self, values_list):
+        self._value = []
         for value in values_list:
             prop = self._property_cls('temporary')
             prop.set_value(value)
             self._value.append(prop.get_value())
 
-    def include_value(self, value):
-        raise Property.NoExpandException
+    def include_value(self, values_list):
+        for val in values_list:
+            if val not in self._value:
+                self._value.append(val)
 
-    def exclude_value(self, value):
-        raise Property.NoExpandException
+    def exclude_value(self, values_list):
+        for val in values_list:
+            if val in self._value:
+                self._value.remove(val)

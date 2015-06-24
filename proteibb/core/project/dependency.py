@@ -32,23 +32,28 @@ class Dependency:
                 'min': self._min,
                 'max': self._max}
 
-    def add(self, other):
-        if not isinstance(other, Dependency):
-            raise TypeError("invalid type of dependency")
-        for v in other._exact:
-            if v not in self._exact:
-                self._exact.append(v)
-        self._max = other._max
-        self._min = other._min
+    def __eq__(self, other):
+        return self.get_name() == other.get_name()
 
-    def subtract(self, other):
-        if not isinstance(other, Dependency):
-            raise TypeError("invalid type of dependency")
-        for v in other._exact:
-            if v in self._exact:
-                self._exact.remove(v)
-        if self._min == other._min:
-            self._min = None
-        if self._max == other._max:
-            self._max = None
-        return not self._exact and not self._min and self._max
+    # ToDo think about dependencies
+
+    # def add(self, other):
+    #     if not isinstance(other, Dependency):
+    #         raise TypeError("invalid type of dependency")
+    #     for v in other._exact:
+    #         if v not in self._exact:
+    #             self._exact.append(v)
+    #     self._max = other._max
+    #     self._min = other._min
+    #
+    # def subtract(self, other):
+    #     if not isinstance(other, Dependency):
+    #         raise TypeError("invalid type of dependency")
+    #     for v in other._exact:
+    #         if v in self._exact:
+    #             self._exact.remove(v)
+    #     if self._min == other._min:
+    #         self._min = None
+    #     if self._max == other._max:
+    #         self._max = None
+    #     return not self._exact and not self._min and self._max

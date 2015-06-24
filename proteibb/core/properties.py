@@ -48,6 +48,9 @@ class VersionProperty(Property):
         Property.__init__(self, 'version', '', is_optional)
         self._set_validator(lambda val: isinstance(val, str) and len(val) and re.match('^(?:\d+)(?:\.\d+)*$', val))
 
+    def _apply_new_value(self, value):
+        self._value = split_version(value)
+
     def include_value(self, new_value):
         if new_value:
             self._value = new_value
@@ -67,77 +70,6 @@ class DependencyProperty(Property):
             v = split_version(version[1:])
             q = version[0]
             self._value.add_version(v, q)
-
-
-# class SingleVersionProperty(VersionProperty):
-#
-#     def __init__(self, is_optional=True):
-#         VersionProperty.__init__(self, 'version', '', is_optional)
-#         self._set_validator(VersionProperty.validator)
-#
-# class MultipleVersionProperty(VersionProperty):
-#
-#     def __init__(self, is_optional=True):
-#         VersionProperty.__init__(self, 'versions', [], is_optional)
-#
-#         def validate(val):
-#             if not isinstance(val, list):
-#                 return False
-#             for version in val:
-#                 if not VersionProperty.validator(version):
-#                     return False
-#             return True
-#         self._set_validator(validate)
-#
-#     def _apply_new_value(self, value):
-#         version = []
-#         for v in value:
-#             version.append(split_version(v))
-#         Property._apply_new_value(self, version)
-
-# # Dependency property variations.
-#
-# class DependenciesProperty(Property):
-#     def __init__(self, is_optional=True):
-#         Property.__init__(self, 'dependencies', [], is_optional)
-#
-#         def validate(val):
-#             if not isinstance(val, list):
-#                 return False
-#             for dep in val:
-#                 if not isinstance(dep, str) or not re.match('^(?:\w+)(?:(?::(?:=|>|<)\d+)(?:\.\d+)*)*$', dep):
-#                     return False
-#             return True
-#         self._set_validator(validate)
-#
-#     def _apply_new_value(self, dep_list):
-#         dependencies = []
-#         for dep in dep_list:
-#             dep_details = dep.split(':')
-#             d = Dependency(dep_details[0])
-#             for version in dep_details[1:]:
-#                 v = split_version(version[1:])
-#                 q = version[0]
-#                 d.add_version(v, q)
-#             dependencies.append(d)
-#         Property._apply_new_value(self, dependencies)
-#
-#     def include_value(self, dependency_list):
-#         if dependency_list:
-#             for incoming_dep in dependency_list:
-#                 for dep in self._value:
-#                     if incoming_dep.get_name() == dep.get_name():
-#                         dep.add(incoming_dep)
-#                         return
-#                 self._value.append(incoming_dep)
-#
-#     def exclude_value(self, dependency_list):
-#         if dependency_list:
-#             for incoming_dep in dependency_list:
-#                 for dep in self._value:
-#                     if incoming_dep.get_name() == dep.get_name():
-#                         if dep.subtract(incoming_dep):
-#                             self._value.remove(dep)
 
 class ExtensionProperty(Property):
 

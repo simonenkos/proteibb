@@ -113,7 +113,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.url(), 'http://mercutial')
         self.assertEqual(p.platforms(), ['platforma'])
         self.assertEqual(p.branch(), 'branchx')
-        self.assertEqual(p.versions(), [[1, 0, 1, 0], [1, 0, 2, 0]])
+        self.assertEqual(p.versions(), [[1, 0, 0, 0], [1, 0, 1, 0], [1, 0, 2, 0]])
         self.assertEqual(p.dependencies(), [])
         self.assertEqual(p.options(), [])
 

@@ -1,11 +1,9 @@
-from proteibb.core.project.properties import *
-from proteibb.util.property_handler import PropertyHandler
-from proteibb.util.property import StringProperty, StringsListProperty
+from proteibb.core.properties import *
 
 class ProjectSetupError(Exception):
     pass
 
-class Project(PropertyHandler):
+class Project(Property.Handler):
     """
     Example of project configuration json file:
     {
@@ -72,50 +70,50 @@ class Project(PropertyHandler):
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            StringsListProperty('platforms'),
+            PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
             StringProperty('branch', is_optional=True),
-            VersionsProperty(),
-            DependenciesProperty(),
-            StringsListProperty('options', True)
+            PropertyListAdapter(VersionProperty, 'versions', is_optional=True),
+            PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True),
+            PropertyListAdapter(StringProperty, 'options', is_optional=True)
         ]
-        PropertyHandler.__init__(self, properties, data)
+        Property.Handler.__init__(self, properties, data)
         # Customize current project according to specific details.
         if not detail:
             raise SyntaxError('invalid section of project details')
         detail.modify(self._properties)
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def name(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def type(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def vcs(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def url(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def platforms(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def branch(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def versions(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def dependencies(self):
         pass
 
-    @PropertyHandler.replace
+    @Property.Handler.replace
     def options(self):
         pass

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Property:
     """
     Class represents an attribute of some configuration which
@@ -59,59 +61,70 @@ class Property:
     def exclude_value(self, value):
         raise Property.NoExpandException
 
-# Property changing policies.
+    # A handler that helps to manipulate with properties.
 
-def include_property_value(dst_prop, src_prop):
-    if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
-        raise TypeError('cannot append a new value to a property: not available for extend')
-    dst_prop.include_value(src_prop.get_value())
+    class LookupError(Exception):
+        pass
 
-def exclude_property_value(dst_prop, src_prop):
-    if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
-        raise TypeError('cannot remove a value from a property: not available for extend')
-    dst_prop.exclude_value(src_prop.get_value())
+    class Handler:
 
-# Additional specialized properties.
+        def __init__(self, properties, data):
+            self._properties = {}
+            if data is None:
+                raise SyntaxError("empty property set")
+            for prop in properties:
+                prop_name = prop.get_name()
+                if not isinstance(prop, Property):
+                    raise SyntaxError('an invalid property class was provided for creation')
+                self._properties[prop_name] = deepcopy(prop)
+                self._properties[prop_name].set_value(data.get(prop_name, None))
 
-class StringProperty(Property):
+        def apply_change_policy(self, properties_map, change_policy):
+            for dst_prop_name, dst_prop in properties_map.items():
+                src_prop = self._properties.get(dst_prop_name, None)
+                if src_prop:
+                    change_policy(dst_prop, src_prop)
 
-    def __init__(self, name, is_optional=False):
-        Property.__init__(self, name, "", is_optional)
-        self._set_validator(lambda val: isinstance(val, str))
+        @staticmethod
+        def replace(func):
+            def get_property_value(self):
+                prop_name = func.__name__
+                if prop_name not in self._properties:
+                    raise Property.LookupError(prop_name)
+                return self._properties[prop_name].get_value()
+            return get_property_value
+
+    # A property changing policies.
+
+    @staticmethod
+    def include_value(dst_prop, src_prop):
+        if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
+            raise TypeError('cannot append a new value to a property: not available for extend')
+        dst_prop.include_value(src_prop.get_value())
+
+    @staticmethod
+    def exclude_value(dst_prop, src_prop):
+        if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
+            raise TypeError('cannot remove a value from a property: not available for extend')
+        dst_prop.exclude_value(src_prop.get_value())
+
+# List adapter changes a property to a list of properties of a current type.
+
+class PropertyListAdapter(Property):
+
+    def __init__(self, property_cls, name, is_optional=False):
+        Property.__init__(name, [], is_optional)
+        self._property_cls = property_cls
+        self._set_validator(lambda val: isinstance(val, list))
+
+    def _apply_new_value(self, values_list):
+        for value in values_list:
+            prop = self._property_cls('temporary')
+            prop.set_value(value)
+            self._value.append(prop.get_value())
 
     def include_value(self, value):
-        self._value = value
+        raise Property.NoExpandException
 
-class StringsListProperty(Property):
-
-    def __init__(self, name, is_optional=False):
-        Property.__init__(self, name, [], is_optional)
-
-        def validate(val):
-            if not isinstance(val, list):
-                return False
-            for p in val:
-                if not isinstance(p, str) or not len(p):
-                    return False
-            return True
-        self._set_validator(validate)
-
-    def include_value(self, strings_list):
-        if strings_list:
-            for string in strings_list:
-                if string not in self._value:
-                    self._value.append(string)
-
-    def exclude_value(self, strings_list):
-        if strings_list:
-            for string in strings_list:
-                if string in self._value:
-                    self._value.remove(string)
-
-class EnumerationProperty(Property):
-
-    def __init__(self, name, enumeration, is_optional=False):
-        Property.__init__(self, name, "", is_optional)
-        if not isinstance(enumeration, list) or not enumeration:
-            raise SyntaxError("invalid enumeration for '" + name + "' property")
-        self._set_validator(lambda val: val in enumeration)
+    def exclude_value(self, value):
+        raise Property.NoExpandException

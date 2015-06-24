@@ -1,36 +1,34 @@
-from proteibb.core.project.properties import *
-from proteibb.util.property_handler import PropertyHandler
-from proteibb.util.property import *
+from proteibb.core.properties import *
 
-class Detail(PropertyHandler):
+class Detail(Property.Handler):
 
-    class Extensions(PropertyHandler):
+    class Extensions(Property.Handler):
 
         def __init__(self, data):
             properties = [
-                StringsListProperty('platforms', is_optional=True),
-                StringsListProperty('options', is_optional=True),
-                DependenciesProperty()
+                PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
+                PropertyListAdapter(StringProperty, 'options', is_optional=True),
+                PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True)
             ]
-            PropertyHandler.__init__(self, properties, data)
+            Property.Handler.__init__(self, properties, data)
 
     def __init__(self, data):
         properties = [
             StringProperty('branch', is_optional=False),
-            VersionsProperty(),
-            ExtensionsProperty('includes', Detail.Extensions),
-            ExtensionsProperty('excludes', Detail.Extensions),
+            PropertyListAdapter(VersionProperty, 'versions', is_optional=True),
+            ExtensionProperty('includes', Detail.Extensions),
+            ExtensionProperty('excludes', Detail.Extensions),
         ]
-        PropertyHandler.__init__(self, properties, data)
+        Property.Handler.__init__(self, properties, data)
 
     def modify(self, properties_map):
         def set_extensions(name, change_policy):
             ext = self._properties[name].get_value()
             if ext:
                 ext.apply_change_policy(properties_map, change_policy)
-        self.apply_change_policy(properties_map, include_property_value)
-        set_extensions('includes', include_property_value)
-        set_extensions('excludes', exclude_property_value)
+        self.apply_change_policy(properties_map, Property.include_value)
+        set_extensions('includes', Property.include_value)
+        set_extensions('excludes', Property.exclude_value)
 
 def prepare_project_details(data):
     if not data:

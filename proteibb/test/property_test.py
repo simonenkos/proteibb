@@ -1,13 +1,11 @@
 import unittest
 
-from proteibb.core.project import properties
-from proteibb.util.property_handler import *
-from proteibb.util.property import *
+from proteibb.core import properties
 
 class PropertyTestCase(unittest.TestCase):
 
     def test_string_list_property(self):
-        slp = StringsListProperty('slp')
+        slp = properties.StringsListProperty('slp')
         self.assertEqual(slp.get_name(), 'slp')
         self.assertEqual(slp.is_optional(), False)
         self.assertRaises(SyntaxError, slp.set_value, 12345)
@@ -128,14 +126,14 @@ class PropertyTestCase(unittest.TestCase):
 
     def test_extensions_property(self):
 
-        class TestPropertyHandler(PropertyHandler):
+        class TestPropertyHandler(properties.Property.Handler):
 
             def __init__(self,  data):
                 internal_props = [
-                    StringProperty('test-prop-str'),
-                    EnumerationProperty('test-prop-enum', ['a', 'b', 'c'], is_optional=True)
+                    properties.StringProperty('test-prop-str'),
+                    properties.EnumerationProperty('test-prop-enum', ['a', 'b', 'c'], is_optional=True)
                 ]
-                PropertyHandler.__init__(self, internal_props, data)
+                properties.Property.Handler.__init__(self, internal_props, data)
 
         ep = properties.ExtensionsProperty('extensions', TestPropertyHandler)
         self.assertEqual(ep.get_name(), 'extensions')

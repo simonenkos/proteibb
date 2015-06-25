@@ -1,9 +1,11 @@
 import re
+
 import rfc3987
 
 from proteibb.util import *
 from proteibb.util.property import *
-from proteibb.core.project.dependency import *
+from proteibb.util.dependency import *
+
 
 # General properties.
 
@@ -59,7 +61,7 @@ class DependencyProperty(Property):
 
     def __init__(self, is_optional=False):
         Property.__init__(self, 'dependency', None, is_optional)
-        regex_str = '^(?:\w+)(?:(?::(?:=|>|<)\d+)(?:\.\d+)*)*$'
+        regex_str = '^(?:\w+)(?:(?::\d+)(?:\.\d+)*)*$'
         validator = lambda val: isinstance(val, str) and len(val) and re.match(regex_str, val)
         self._set_validator(validator)
 
@@ -67,9 +69,7 @@ class DependencyProperty(Property):
         dep_details = value.split(':')
         self._value = Dependency(dep_details[0])
         for version in dep_details[1:]:
-            v = split_version(version[1:])
-            q = version[0]
-            self._value.add_version(v, q)
+            self._value.add_version(split_version(version))
 
 class ExtensionProperty(Property):
 

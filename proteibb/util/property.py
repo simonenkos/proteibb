@@ -125,11 +125,21 @@ class PropertyListAdapter(Property):
             self._value.append(prop.get_value())
 
     def include_value(self, values_list):
-        for val in values_list:
-            if val not in self._value:
-                self._value.append(val)
+        for new_val in values_list:
+            new_val_not_in_list = True
+            for val in self._value:
+                if new_val == val:
+                    new_val_not_in_list = False
+                    if hasattr(val, 'include'):
+                        val.include(new_val)
+            if new_val_not_in_list:
+                self._value.append(new_val)
 
     def exclude_value(self, values_list):
-        for val in values_list:
-            if val in self._value:
-                self._value.remove(val)
+        for new_val in values_list:
+            need_to_remove = True
+            for val in self._value:
+                if new_val == val and hasattr(val, 'exclude'):
+                    need_to_remove = val.exclude(new_val)
+            if need_to_remove:
+                self._value.remove(new_val)

@@ -1,8 +1,12 @@
-class Platform:
+from proteibb.core.properties import *
 
-    def __init__(self, name, options):
-        self._name = name
-        self._options = options
+class Platform(Property.Handler):
+
+    def __init__(self, data):
+        properties = [
+            
+        ]
+        Property.Handler.__init__(self, properties, data)
 
     def get_name(self):
         return self._name

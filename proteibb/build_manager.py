@@ -1,5 +1,5 @@
 import proteibb.core.workspace as ws
-import proteibb.core.project.filters as filters
+import proteibb.core.filters as filters
 
 class BuildManager:
     """Build manager initialises a structure of the build system and make
@@ -15,7 +15,6 @@ class BuildManager:
     def get_change_sources(self):
         pf = filters.TypeFilter('library')
         libraries = self._ws.get_projects(pf)
-
 
     def get_schedulers(self):
         pass

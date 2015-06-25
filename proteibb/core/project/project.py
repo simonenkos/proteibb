@@ -19,9 +19,9 @@ class Project(Property.Handler):
         ],
         // Common dependencies list.
         "dependencies" : [
-            "projectx:=a.b",
+            "projectx:a.b",
             "projecty",
-            "projectz:>c.d"
+            "projectz:c.d.e:x.y.z"
         ],
         // Common options list (for application type only).
         "options" : [
@@ -48,7 +48,7 @@ class Project(Property.Handler):
                         "option_disable_fix_a"
                     ],
                     "dependencies" : [
-                        "projectq:<a.b.c.d.e"
+                        "projectq:a.b.c.d.e"
                     ]
                 }
                 "excludes" : {

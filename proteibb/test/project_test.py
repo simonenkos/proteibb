@@ -53,7 +53,7 @@ class ProjectTestCase(unittest.TestCase):
             'url': 'http://github.com/user/project',
             'platforms': ['platformx', 'platformy'],
             'options': ['optiona', 'optionb', 'optionc', 'optiond'],
-            'dependencies': ['projecta:=1.0:=2.0:=3.0', 'projectb:<2.0', 'projectc:>3.0:<3.2']
+            'dependencies': ['projecta:1.0:2.0:3.0', 'projectb:2.0', 'projectc:3.0:3.2', 'projectf']
         }
         detail_data = {
             'branch': 'branchb',
@@ -61,12 +61,12 @@ class ProjectTestCase(unittest.TestCase):
             'includes': {
                 'platforms': ['platformz'],
                 'options': ['optione', 'optionf', 'optionh'],
-                'dependencies': ['projectd:=1.0:=1.1:=1.2:>1.1:<3.0']
+                'dependencies': ['projectd:1.0:1.1:1.2:1.3', 'projectc:1.0:1.2', 'projectf:1.0']
             },
             'excludes': {
                 'platforms': ['platformy'],
                 'options': ['optionb', 'optionc'],
-                'dependencies': ['projecta:=2.0', 'projectb']
+                'dependencies': ['projecta:2.0', 'projectb:2.0', 'projectc:3.0:3.2']
             }
         }
         p = project.Project(data, detail.Detail(detail_data))
@@ -77,19 +77,15 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.platforms(), ['platformx', 'platformz'])
         self.assertEqual(p.branch(), 'branchb')
         self.assertEqual(p.versions(), [[4, 0]])
-        self.assertEqual(len(p.dependencies()), 3)
+        self.assertEqual(len(p.dependencies()), 4)
         self.assertEqual(p.dependencies()[0].get_name(), 'projecta')
-        self.assertEqual(p.dependencies()[0].get_versions(), {'ver': [[1, 0], [3, 0]],
-                                                              'min': None,
-                                                              'max': None})
+        self.assertEqual(p.dependencies()[0].get_versions(), [[1, 0], [3, 0]])
         self.assertEqual(p.dependencies()[1].get_name(), 'projectc')
-        self.assertEqual(p.dependencies()[1].get_versions(), {'ver': [],
-                                                              'min': [3, 0],
-                                                              'max': [3, 2]})
-        self.assertEqual(p.dependencies()[2].get_name(), 'projectd')
-        self.assertEqual(p.dependencies()[2].get_versions(), {'ver': [[1, 0], [1, 1], [1, 2]],
-                                                              'min': [1, 1],
-                                                              'max': [3, 0]})
+        self.assertEqual(p.dependencies()[1].get_versions(), [[1, 0], [1, 2]])
+        self.assertEqual(p.dependencies()[2].get_name(), 'projectf')
+        self.assertEqual(p.dependencies()[2].get_versions(), [[1, 0]])
+        self.assertEqual(p.dependencies()[3].get_name(), 'projectd')
+        self.assertEqual(p.dependencies()[3].get_versions(), [[1, 0], [1, 1], [1, 2], [1, 3]])
         self.assertEqual(p.options(), ['optiona', 'optiond', 'optione', 'optionf', 'optionh'])
 
     def test_branch_and_versions_replace(self):

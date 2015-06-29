@@ -13,8 +13,11 @@ class BuildManager:
         pass
 
     def get_change_sources(self):
-        pf = filters.TypeFilter('library')
-        libraries = self._ws.get_projects(pf)
+        library_filter = filters.TypeFilter('library')
+        libraries = self._ws.get_projects(library_filter)
+        vcs_filters = [
+            filters.FactoryFilter()
+        ]
 
     def get_schedulers(self):
         pass

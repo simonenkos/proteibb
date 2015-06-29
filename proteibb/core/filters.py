@@ -1,3 +1,6 @@
+import os.path
+
+from proteibb.util import *
 from proteibb.util.filter import *
 from buildbot.plugins import *
 
@@ -11,16 +14,14 @@ class VcsFilter(Filter):
     def __init__(self, desired_project_vcs):
         Filter.__init__(self, lambda project: project.vsc() == desired_project_vcs, VcsFilter.make_change_sources)
 
-    @staticmethod
-    def make_change_sources(vcs_list):
+    def make_change_sources(self, project_list):
         cs_list = []
-        for vcs in vcs_list:
-            p = VcsFilter.make(vcs)
-            cs_list.append(p)
+        for project in project_list:
+            cs = self.make(project)
+            cs_list.append(cs)
         return cs_list
 
-    @staticmethod
-    def change_source(vcs):
+    def change_source(self, project):
         raise NotImplementedError()
 
 class GitFilter(VcsFilter):
@@ -28,6 +29,39 @@ class GitFilter(VcsFilter):
     def __init__(self):
         VcsFilter.__init__(self, 'git')
 
-    @staticmethod
-    def change_source(vcs):
-        return changes.GitPoller() # ToDo
+    def change_source(self, project):
+        branch = project.branch()
+        return changes.GitPoller(repourl=project.url(),
+                                 branches=([branch] if len(branch) else []),
+                                 project=project.name())
+
+class SvnFilter(VcsFilter):
+
+    def __init__(self):
+        VcsFilter.__init__(self, 'svn')
+
+    def change_source(self, project):
+        url = project.url()
+        branch = project.branch()
+        if len(branch):
+            if not url.endswith('/'):
+                url += '/'
+            url += branch
+        return changes.SVNPoller(svnurl=url,
+                                 split_file=util.svn.split_file_branches,
+                                 project=project.name())
+
+class HgFilter(VcsFilter):
+
+    def __init__(self):
+        VcsFilter.__init__(self, 'hg')
+
+    def change_source(self, project):
+        branch = project.branch()
+        version = project.version()
+        work_dir = os.path.join(project.name().lower(),
+                                (make_version(version) if version else ''),
+                                branch)
+        return changes.HgPoller(repourl=project.url(),
+                                branch=(branch if len(branch) else None),
+                                workdir=work_dir)

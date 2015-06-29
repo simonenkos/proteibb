@@ -17,7 +17,7 @@ class ProjectTestCase(unittest.TestCase):
 
     def test_project_invalid_details(self):
         detail_data = {
-            'versions': ['1.9.0']
+            'version': '1.9.0'
         }
         self.assertRaises(SyntaxError, detail.Detail, detail_data)
 
@@ -32,7 +32,7 @@ class ProjectTestCase(unittest.TestCase):
         }
         detail_data = {
             'branch': 'brancha',
-            'versions': ['1.0', '2.0'],
+            'version': '1.0',
         }
         p = project.Project(data, detail.Detail(detail_data))
         self.assertEqual(p.name(), 'project')
@@ -41,7 +41,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.url(), 'http://subversion')
         self.assertEqual(p.platforms(), ['platformx', 'platformy'])
         self.assertEqual(p.branch(), 'brancha')
-        self.assertEqual(p.versions(), [[1, 0], [2, 0]])
+        self.assertEqual(p.version(), [1, 0])
         self.assertEqual(p.dependencies(), [])
         self.assertEqual(p.options(), ['optionx', 'optiony'])
 
@@ -57,7 +57,7 @@ class ProjectTestCase(unittest.TestCase):
         }
         detail_data = {
             'branch': 'branchb',
-            'versions': ['4.0'],
+            'version': '4.0',
             'includes': {
                 'platforms': ['platformz'],
                 'options': ['optione', 'optionf', 'optionh'],
@@ -76,7 +76,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.url(), 'http://github.com/user/project')
         self.assertEqual(p.platforms(), ['platformx', 'platformz'])
         self.assertEqual(p.branch(), 'branchb')
-        self.assertEqual(p.versions(), [[4, 0]])
+        self.assertEqual(p.version(), [4, 0])
         self.assertEqual(len(p.dependencies()), 4)
         self.assertEqual(p.dependencies()[0].get_name(), 'projecta')
         self.assertEqual(p.dependencies()[0].get_versions(), [[1, 0], [3, 0]])
@@ -88,7 +88,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.dependencies()[3].get_versions(), [[1, 0], [1, 1], [1, 2], [1, 3]])
         self.assertEqual(p.options(), ['optiona', 'optiond', 'optione', 'optionf', 'optionh'])
 
-    def test_branch_and_versions_replace(self):
+    def test_branch_and_version_replace(self):
         data = {
             'name': 'libx',
             'type': 'library',
@@ -96,11 +96,11 @@ class ProjectTestCase(unittest.TestCase):
             'url': 'http://mercutial',
             'platforms': ['platforma'],
             'branch': 'branch_default',
-            'versions': ['1.0.0.0']
+            'version': '1.0.0.0'
         }
         detail_data = {
             'branch': 'branchx',
-            'versions': ['1.0.1.0', '1.0.2.0']
+            'version': '1.0.2.0'
         }
         p = project.Project(data, detail.Detail(detail_data))
         self.assertEqual(p.name(), 'libx')
@@ -109,7 +109,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.url(), 'http://mercutial')
         self.assertEqual(p.platforms(), ['platforma'])
         self.assertEqual(p.branch(), 'branchx')
-        self.assertEqual(p.versions(), [[1, 0, 0, 0], [1, 0, 1, 0], [1, 0, 2, 0]])
+        self.assertEqual(p.version(), [1, 0, 2, 0])
         self.assertEqual(p.dependencies(), [])
         self.assertEqual(p.options(), [])
 

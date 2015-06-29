@@ -15,7 +15,7 @@ class Detail(Property.Handler):
     def __init__(self, data):
         properties = [
             StringProperty('branch', is_optional=False),
-            PropertyListAdapter(VersionProperty, 'versions', is_optional=True),
+            VersionProperty(is_optional=True),
             ExtensionProperty('includes', Detail.Extensions),
             ExtensionProperty('excludes', Detail.Extensions),
         ]

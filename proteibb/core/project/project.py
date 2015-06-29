@@ -36,10 +36,7 @@ class Project(Property.Handler):
         "details" : [
             {
                 "branch" : "branch_x", // Not optional.
-                "versions" : [
-                    "a.b.c",
-                    "d.e.f"
-                ],
+                "version" : "a.b.c",
                 "includes" : {
                     "platforms" : [
                         "mips"
@@ -57,9 +54,7 @@ class Project(Property.Handler):
             },
             {
                 "branch" : 'branch_z",
-                "versions" : [
-                    "a.b.c"
-                ]
+                "version" : "x.y.z.w"
             },
         ]
     }
@@ -72,7 +67,7 @@ class Project(Property.Handler):
             UrlProperty(),
             PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
             StringProperty('branch', is_optional=True),
-            PropertyListAdapter(VersionProperty, 'versions', is_optional=True),
+            VersionProperty(is_optional=True),
             PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True),
             PropertyListAdapter(StringProperty, 'options', is_optional=True)
         ]
@@ -107,7 +102,7 @@ class Project(Property.Handler):
         pass
 
     @Property.Handler.replace
-    def versions(self):
+    def version(self):
         pass
 
     @Property.Handler.replace

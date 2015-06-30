@@ -11,6 +11,10 @@ class Project(Property.Handler):
         "type" : "library|application|test",
         "vcs"  : "svn|git|hg",
         "url"  : "http://url_to_repository",
+        // Optional version information for dependency resolving.
+        "version" : "a.b.c",
+        // Optional default branch name, which can be overwritten in details.
+        "branch" : "default_branch",
         // Common platforms list.
         "platforms" : [
             "arm",
@@ -36,7 +40,6 @@ class Project(Property.Handler):
         "details" : [
             {
                 "branch" : "branch_x", // Not optional.
-                "version" : "a.b.c",
                 "includes" : {
                     "platforms" : [
                         "mips"
@@ -65,9 +68,9 @@ class Project(Property.Handler):
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
-            StringProperty('branch', is_optional=True),
             VersionProperty(is_optional=True),
+            StringProperty('branch', is_optional=True),
+            PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
             PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True),
             PropertyListAdapter(StringProperty, 'options', is_optional=True)
         ]

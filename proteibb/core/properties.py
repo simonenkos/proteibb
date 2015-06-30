@@ -6,7 +6,6 @@ from proteibb.util import *
 from proteibb.util.property import *
 from proteibb.util.dependency import *
 
-
 # General properties.
 
 class StringProperty(Property):

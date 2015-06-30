@@ -15,9 +15,10 @@ class BuildManager:
     def get_change_sources(self):
         library_filter = filters.TypeFilter('library')
         libraries = self._ws.get_projects(library_filter)
-        vcs_filters = [
-            filters.FactoryFilter()
-        ]
+        cs_filter = filters.apply_filter_set_parallel(filters.GitFilter(),
+                                                      filters.SvnFilter(),
+                                                      filters.HgFilter())
+        return cs_filter(libraries)
 
     def get_schedulers(self):
         pass

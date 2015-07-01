@@ -1,3 +1,5 @@
+import re
+
 from copy import deepcopy
 
 class Property:
@@ -37,29 +39,43 @@ class Property:
     def _apply_new_value(self, value):
         self._value = value
 
-    class NoExpandException(Exception):
-        pass
-
-    @staticmethod
-    def is_available_for_extend(dst, src, method):
-        if not isinstance(dst, Property) or not isinstance(src, Property) or type(dst) != type(src):
-            return False
-        if dst.get_name() != src.get_name():
-            return False
-        # Check methods was implemented.
-        try:
-            method(None)
-            return True
-        except Property.NoExpandException:
-            return False
-        except:
-            return True
-
-    def include_value(self, value):
-        raise Property.NoExpandException
-
-    def exclude_value(self, value):
-        raise Property.NoExpandException
+    # class NoExpandException(Exception):
+    #     pass
+    #
+    # @staticmethod
+    # def is_available_for_extend(dst, src, method):
+    #     if not isinstance(dst, Property) or not isinstance(src, Property) or type(dst) != type(src):
+    #         return False
+    #     if dst.get_name() != src.get_name():
+    #         return False
+    #     # Check methods was implemented.
+    #     try:
+    #         method(None)
+    #         return True
+    #     except Property.NoExpandException:
+    #         return False
+    #     except:
+    #         return True
+    #
+    # def include_value(self, value):
+    #     raise Property.NoExpandException
+    #
+    # def exclude_value(self, value):
+    #     raise Property.NoExpandException
+    #
+    # # A property changing policies.
+    #
+    # @staticmethod
+    # def include(dst_prop, src_prop):
+    #     if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
+    #         raise TypeError('cannot append a new value to a property: not available for extend')
+    #     dst_prop.include_value(src_prop.get_value())
+    #
+    # @staticmethod
+    # def exclude(dst_prop, src_prop):
+    #     if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
+    #         raise TypeError('cannot remove a value from a property: not available for extend')
+    #     dst_prop.exclude_value(src_prop.get_value())
 
     # A handler that helps to manipulate with properties.
 
@@ -79,12 +95,6 @@ class Property:
                 self._properties[prop_name] = deepcopy(prop)
                 self._properties[prop_name].set_value(data.get(prop_name, None))
 
-        def apply_change_policy(self, properties_map, change_policy):
-            for dst_prop_name, dst_prop in properties_map.items():
-                src_prop = self._properties.get(dst_prop_name, None)
-                if src_prop:
-                    change_policy(dst_prop, src_prop)
-
         @staticmethod
         def replace(func):
             def get_property_value(self):
@@ -94,52 +104,73 @@ class Property:
                 return self._properties[prop_name].get_value()
             return get_property_value
 
-    # A property changing policies.
-
-    @staticmethod
-    def include_value(dst_prop, src_prop):
-        if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
-            raise TypeError('cannot append a new value to a property: not available for extend')
-        dst_prop.include_value(src_prop.get_value())
-
-    @staticmethod
-    def exclude_value(dst_prop, src_prop):
-        if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
-            raise TypeError('cannot remove a value from a property: not available for extend')
-        dst_prop.exclude_value(src_prop.get_value())
-
 # List adapter changes a property to a list of properties of a current type.
 
 class PropertyListAdapter(Property):
 
-    def __init__(self, property_cls, name, is_optional=False):
+    def __init__(self, name, is_optional, list_cls, *args, **kwargs):
+        self._list_cls = list_cls
+        self._list_cls_args = args
+        self._list_cls_kwargs = kwargs
         Property.__init__(self, name, [], is_optional)
-        self._property_cls = property_cls
         self._set_validator(lambda val: isinstance(val, list) and len(val))
 
     def _apply_new_value(self, values_list):
         self._value = []
         for value in values_list:
-            prop = self._property_cls('temporary')
+            prop = self._list_cls('temporary', *self._list_cls_args, **self._list_cls_kwargs)
             prop.set_value(value)
             self._value.append(prop.get_value())
 
-    def include_value(self, values_list):
-        for new_val in values_list:
-            new_val_not_in_list = True
-            for val in self._value:
-                if new_val == val:
-                    new_val_not_in_list = False
-                    if hasattr(val, 'include'):
-                        val.include(new_val)
-            if new_val_not_in_list:
-                self._value.append(new_val)
+# Extension adapter which changes a property to have a modification flag.
 
-    def exclude_value(self, values_list):
-        for new_val in values_list:
-            need_to_remove = True
-            for val in self._value:
-                if new_val == val and hasattr(val, 'exclude'):
-                    need_to_remove = val.exclude(new_val)
-            if need_to_remove:
-                self._value.remove(new_val)
+class ExtensionAdapter(Property):
+
+    def __init__(self, name, is_optional, extension_cls, *args, **kwargs):
+        self._extension_cls = extension_cls
+        self._extension_cls_args = args
+        self._extension_cls_kwargs = kwargs
+        Property.__init__(self, name, None, is_optional)
+        self._set_validator(lambda val: isinstance(val, str) and re.match('^(?:\+|\-)(?!\+|\-).+', val))
+
+    def _apply_new_value(self, value):
+        modification = value[0]
+        prop = self._extension_cls('temporary', *self._extension_cls_args, **self._extension_cls_kwargs)
+        prop.set_value(value[1:])
+        self._value = {'ext': modification, 'val': prop.get_value()}
+
+    # @staticmethod
+    # def _check_extensions(val):
+    #     if not isinstance(val, list) or not len(val):
+    #         return False
+    #     for ext in val:
+    #         if not isinstance(ext, str) or not re.match('^(?:\+|\-)(?!\+|\-).+', ext):
+    #             return False
+    #     return True
+    #
+    # def _apply_new_value(self, values_list):
+    #     self._value = []
+    #     for value in values_list:
+    #         prop = self._property_cls('temporary', self._property_cls_args, self._property_cls_kwargs)
+    #         prop.set_value(value)
+    #         self._value.append(prop.get_value())
+    #
+    # def extend(self, values_list):
+    #     for new_val in values_list:
+    #         new_val_not_in_list = True
+    #         for val in self._value:
+    #             if new_val == val:
+    #                 new_val_not_in_list = False
+    #                 if hasattr(val, 'include'):
+    #                     val.include(new_val)
+    #         if new_val_not_in_list:
+    #             self._value.append(new_val)
+    #
+    # def exclude(self, values_list):
+    #     for new_val in values_list:
+    #         need_to_remove = True
+    #         for val in self._value:
+    #             if new_val == val and hasattr(val, 'exclude'):
+    #                 need_to_remove = val.exclude(new_val)
+    #         if need_to_remove:
+    #             self._value.remove(new_val)

@@ -4,7 +4,7 @@ from os import listdir
 from os.path import isfile, join, splitext
 
 from proteibb.core.project.project import Project
-from proteibb.core.project.detail import prepare_project_details
+from proteibb.core.project.branch import prepare_project_details
 from proteibb.core.configuration import conf_factory
 
 class Workspace:

@@ -1,4 +1,5 @@
 from proteibb.core.properties import *
+from proteibb.core.project.branch import Branch
 
 class ProjectSetupError(Exception):
     pass
@@ -11,10 +12,6 @@ class Project(Property.Handler):
         "type" : "library|application|test",
         "vcs"  : "svn|git|hg",
         "url"  : "http://url_to_repository",
-        // Optional version information for dependency resolving.
-        "version" : "a.b.c",
-        // Optional default branch name, which can be overwritten in details.
-        "branch" : "default_branch",
         // Common platforms list.
         "platforms" : [
             "arm",
@@ -34,51 +31,44 @@ class Project(Property.Handler):
             "option_disable_feature_z",
             ...
         ],
-        // Options for project details.
-        // It's optional section, but if provided it extends default properties.
-        // There are may be multiple details for which multiple projects will be created.
-        "details" : [
+        // This section describes branches of a project.
+        "branches" : [
             {
-                "branch" : "branch_x", // Not optional.
-                "includes" : {
-                    "platforms" : [
-                        "mips"
-                    ],
-                    "options" : [
-                        "option_disable_fix_a"
-                    ],
-                    "dependencies" : [
-                        "projectq:a.b.c.d.e"
-                    ]
-                }
-                "excludes" : {
-                    // Same as 'includes' section.
-                }
+                "name" : "branch_x",
+                "version" : "a.b.c",
+                "platforms" : [
+                    "+mips"
+                ],
+                "options" : [
+                    "+option_disable_fix_a",
+                    "+option_enable_fix_b",
+                    "-option_disable_feature_z"
+                ],
+                "dependencies" : [
+                    "-projectz:c.d.e",
+                    "+projecta:x.y.z"
+
+                ]
             },
             {
-                "branch" : 'branch_z",
+                "name" : 'branch_z",
                 "version" : "x.y.z.w"
             },
         ]
     }
     """
-    def __init__(self, data, detail):
+    def __init__(self, data):
         properties = [
             StringProperty('name'),
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            VersionProperty(is_optional=True),
-            StringProperty('branch', is_optional=True),
-            PropertyListAdapter(StringProperty, 'platforms', is_optional=True),
-            PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True),
-            PropertyListAdapter(StringProperty, 'options', is_optional=True)
+            PropertyListAdapter('platforms', True, StringProperty),
+            PropertyListAdapter('dependencies', True, DependencyProperty),
+            PropertyListAdapter('options', True, StringProperty),
+            PropertyListAdapter('branches', True, SubProperty, sub_class=Branch)
         ]
         Property.Handler.__init__(self, properties, data)
-        # Customize current project according to specific details.
-        if not detail:
-            raise SyntaxError('invalid section of project details')
-        detail.modify(self._properties)
 
     @Property.Handler.replace
     def name(self):
@@ -97,21 +87,14 @@ class Project(Property.Handler):
         pass
 
     @Property.Handler.replace
-    def platforms(self):
+    def branches(self):
         pass
 
-    @Property.Handler.replace
-    def branch(self):
+    def platforms(self, branch):
         pass
 
-    @Property.Handler.replace
-    def version(self):
+    def dependencies(self, branch):
         pass
 
-    @Property.Handler.replace
-    def dependencies(self):
-        pass
-
-    @Property.Handler.replace
-    def options(self):
+    def options(self, branch):
         pass

@@ -1,7 +1,7 @@
 import unittest
 
 from proteibb.core.project import project
-from proteibb.core.project import detail
+from proteibb.core.project import branch
 
 class ProjectTestCase(unittest.TestCase):
 
@@ -19,7 +19,7 @@ class ProjectTestCase(unittest.TestCase):
         detail_data = {
             'version': '1.9.0'
         }
-        self.assertRaises(SyntaxError, detail.Detail, detail_data)
+        self.assertRaises(SyntaxError, branch.Detail, detail_data)
 
     def test_project_no_extensions(self):
         data = {
@@ -34,7 +34,7 @@ class ProjectTestCase(unittest.TestCase):
             'branch': 'brancha',
             'version': '1.0',
         }
-        p = project.Project(data, detail.Detail(detail_data))
+        p = project.Project(data, branch.Detail(detail_data))
         self.assertEqual(p.name(), 'project')
         self.assertEqual(p.type(), 'application')
         self.assertEqual(p.vcs(), 'svn')
@@ -69,7 +69,7 @@ class ProjectTestCase(unittest.TestCase):
                 'dependencies': ['projecta:2.0', 'projectb:2.0', 'projectc:3.0:3.2']
             }
         }
-        p = project.Project(data, detail.Detail(detail_data))
+        p = project.Project(data, branch.Detail(detail_data))
         self.assertEqual(p.name(), 'project')
         self.assertEqual(p.type(), 'application')
         self.assertEqual(p.vcs(), 'git')
@@ -102,7 +102,7 @@ class ProjectTestCase(unittest.TestCase):
             'branch': 'branchx',
             'version': '1.0.2.0'
         }
-        p = project.Project(data, detail.Detail(detail_data))
+        p = project.Project(data, branch.Detail(detail_data))
         self.assertEqual(p.name(), 'libx')
         self.assertEqual(p.type(), 'library')
         self.assertEqual(p.vcs(), 'hg')

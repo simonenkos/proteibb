@@ -107,9 +107,9 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(dp.get_value().get_name(), 'lib_d')
         self.assertEqual(dp.get_value().get_versions(), [[1, 0, 5], [1, 0, 7], [1, 1, 14]])
 
-    def test_extensions_property(self):
+    def test_sub_property(self):
 
-        class TestPropertyHandler(properties.Property.Handler):
+        class SubPropertyHandler(properties.Property.Handler):
 
             def __init__(self,  data):
                 internal_props = [
@@ -118,28 +118,28 @@ class PropertyTestCase(unittest.TestCase):
                 ]
                 properties.Property.Handler.__init__(self, internal_props, data)
 
-        ep = properties.ExtensionProperty('extensions', TestPropertyHandler)
-        self.assertEqual(ep.get_name(), 'extensions')
-        self.assertEqual(ep.get_value(), None)
-        self.assertEqual(ep.is_optional(), True)
-        self.assertRaises(SyntaxError, ep.set_value, 12345)
-        self.assertRaises(SyntaxError, ep.set_value, '')
-        self.assertRaises(SyntaxError, ep.set_value, [])
-        self.assertRaises(SyntaxError, ep.set_value, {'': ''})
-        self.assertRaises(SyntaxError, ep.set_value, {'': []})
-        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 12345})
-        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 'abcde1', 'test-prop-enum': ''})
-        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-str': 'abcde2', 'test-prop-enum': 'e'})
-        self.assertRaises(SyntaxError, ep.set_value, {'test-prop-enum': 'a'})
-        self.assertEqual(ep.set_value({'test-prop-str': 'test-prop-str-value'}), None)
-        self.assertEqual(ep.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value')
-        self.assertEqual(ep.get_value()._properties['test-prop-enum'].get_value(), '')
-        self.assertEqual(ep.set_value({'test-prop-str': 'test-prop-str-value-two', 'test-prop-enum': 'b'}), None)
-        self.assertEqual(ep.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value-two')
-        self.assertEqual(ep.get_value()._properties['test-prop-enum'].get_value(), 'b')
+        sp = properties.SubProperty('extensions', SubPropertyHandler)
+        self.assertEqual(sp.get_name(), 'extensions')
+        self.assertEqual(sp.get_value(), None)
+        self.assertEqual(sp.is_optional(), True)
+        self.assertRaises(SyntaxError, sp.set_value, 12345)
+        self.assertRaises(SyntaxError, sp.set_value, '')
+        self.assertRaises(SyntaxError, sp.set_value, [])
+        self.assertRaises(SyntaxError, sp.set_value, {'': ''})
+        self.assertRaises(SyntaxError, sp.set_value, {'': []})
+        self.assertRaises(SyntaxError, sp.set_value, {'test-prop-str': 12345})
+        self.assertRaises(SyntaxError, sp.set_value, {'test-prop-str': 'abcde1', 'test-prop-enum': ''})
+        self.assertRaises(SyntaxError, sp.set_value, {'test-prop-str': 'abcde2', 'test-prop-enum': 'e'})
+        self.assertRaises(SyntaxError, sp.set_value, {'test-prop-enum': 'a'})
+        self.assertEqual(sp.set_value({'test-prop-str': 'test-prop-str-value'}), None)
+        self.assertEqual(sp.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value')
+        self.assertEqual(sp.get_value()._properties['test-prop-enum'].get_value(), '')
+        self.assertEqual(sp.set_value({'test-prop-str': 'test-prop-str-value-two', 'test-prop-enum': 'b'}), None)
+        self.assertEqual(sp.get_value()._properties['test-prop-str'].get_value(), 'test-prop-str-value-two')
+        self.assertEqual(sp.get_value()._properties['test-prop-enum'].get_value(), 'b')
 
     def test_string_list_property(self):
-        vlp = properties.PropertyListAdapter(properties.StringProperty, 'string-list', is_optional=True)
+        vlp = properties.PropertyListAdapter('string-list', True, properties.StringProperty)
         self.assertEqual(vlp.get_name(), 'string-list')
         self.assertEqual(vlp.get_value(), [])
         self.assertEqual(vlp.is_optional(), True)
@@ -151,6 +151,26 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, vlp.set_value, ['abcdef', 12345])
         self.assertEqual(vlp.set_value(['abc', 'bcd', 'cde']), None)
         self.assertEqual(vlp.get_value(), ['abc', 'bcd', 'cde'])
+
+    def test_extension_property(self):
+        ep = properties.ExtensionAdapter('ext-ada', True, properties.StringProperty)
+        self.assertEqual(ep.get_name(), 'ext-ada')
+        self.assertEqual(ep.get_value(), None)
+        self.assertEqual(ep.is_optional(), True)
+        self.assertRaises(SyntaxError, ep.set_value, 12345)
+        self.assertRaises(SyntaxError, ep.set_value, "")
+        self.assertRaises(SyntaxError, ep.set_value, "+")
+        self.assertRaises(SyntaxError, ep.set_value, "-")
+        self.assertRaises(SyntaxError, ep.set_value, "++abc")
+        self.assertRaises(SyntaxError, ep.set_value, "abc-cde")
+        self.assertRaises(SyntaxError, ep.set_value, "abcdefg")
+        self.assertEqual(ep.set_value("-test-str"), None)
+        self.assertEqual(ep.get_value(), {'ext': '-', 'val': 'test-str'})
+        self.assertEqual(ep.set_value("+test-str-other"), None)
+        self.assertEqual(ep.get_value(), {'ext': '+', 'val': 'test-str-other'})
+
+    def test_extension_list_property(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

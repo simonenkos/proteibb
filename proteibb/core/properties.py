@@ -1,5 +1,4 @@
 import re
-
 import rfc3987
 
 from proteibb.util import *
@@ -13,9 +12,6 @@ class StringProperty(Property):
     def __init__(self, name, is_optional=False):
         Property.__init__(self, name, "", is_optional)
         self._set_validator(lambda val: isinstance(val, str) and len(val))
-
-    def include_value(self, value):
-        self._value = value
 
 class EnumerationProperty(Property):
 
@@ -52,10 +48,6 @@ class VersionProperty(Property):
     def _apply_new_value(self, value):
         self._value = split_version(value)
 
-    def include_value(self, new_value):
-        if new_value:
-            self._value = new_value
-
 class DependencyProperty(Property):
 
     def __init__(self, is_optional=False):
@@ -70,12 +62,12 @@ class DependencyProperty(Property):
         for version in dep_details[1:]:
             self._value.add_version(split_version(version))
 
-class ExtensionProperty(Property):
+class SubProperty(Property):
 
-    def __init__(self, name, extension_property_handler_cls, is_optional=True):
+    def __init__(self, name, sub_class, is_optional=True):
         Property.__init__(self, name, None, is_optional)
-        self._extension_property_handler_cls = extension_property_handler_cls
+        self._sub_class = sub_class
         self._set_validator(lambda val: isinstance(val, dict))
 
     def _apply_new_value(self, value):
-        self._value = self._extension_property_handler_cls(value)
+        self._value = self._sub_class(value)

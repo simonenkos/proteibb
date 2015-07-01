@@ -3,9 +3,9 @@ import json
 from os import listdir
 from os.path import isfile, join, splitext
 
-from proteibb.core.configuration.configuration import Configuration
 from proteibb.core.project.project import Project
 from proteibb.core.project.detail import prepare_project_details
+from proteibb.core.configuration import conf_factory
 
 class Workspace:
     """
@@ -13,7 +13,7 @@ class Workspace:
     a set of projects and configuration structure.
     """
     def __init__(self, base_path):
-        self._configuration = None
+        self._configurations = []
         self._projects = []
 
         if not base_path.endwith('/'):
@@ -33,17 +33,20 @@ class Workspace:
             if isfile(entry_path) and extension is '.json':
                 with open(entry_path) as data_file:
                     entry_data = json.load(data_file)
-                    creation_callback(entry_data)
+                    creation_callback(entry_name, entry_data)
 
-    def _add_configuration(self, data):
-        self._configuration = Configuration(data)
+    def _add_configuration(self, name, data):
+        conf = conf_factory.make(data, conf_name=name)
+        self._configurations.append(conf)
 
-    def _add_projects(self, data):
+    def _add_projects(self, name, data):
         details = prepare_project_details(data)
         for d in details:
             project = Project(data, d)
-            # project.setup(self._configuration) # ToDo
             self._projects.append(project)
+
+    def get_configuration(self, configuration_filter):
+        return configuration_filter(self._configurations)
 
     def get_projects(self, project_filter):
         return project_filter(self._projects)

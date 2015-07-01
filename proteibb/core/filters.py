@@ -4,6 +4,18 @@ from proteibb.util import *
 from proteibb.util.filter import *
 from buildbot.plugins import *
 
+class ConfigurationFilter(Filter):
+
+    def __init__(self, conf_name):
+        Filter.__init__(self, lambda conf: type(conf).__name__.lower() == conf_name,
+                        ConfigurationFilter._altering_function)
+
+    @staticmethod
+    def _altering_function(conf_list):
+        if len(conf_list) != 1:
+            raise ValueError('unexpected filtered configuration objects count')
+        return conf_list[0]
+
 class TypeFilter(Filter):
 
     def __init__(self, desired_project_type):
@@ -12,7 +24,7 @@ class TypeFilter(Filter):
 class VcsFilter(Filter):
 
     def __init__(self, desired_project_vcs):
-        Filter.__init__(self, lambda project: project.vsc() == desired_project_vcs, VcsFilter.make_change_sources)
+        Filter.__init__(self, lambda project: project.vsc() == desired_project_vcs, self.make_change_sources)
 
     def make_change_sources(self, project_list):
         cs_list = []

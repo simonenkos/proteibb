@@ -1,8 +1,6 @@
 from proteibb.core.properties import *
 from proteibb.core.project.branch import Branch
 
-class ProjectSetupError(Exception):
-    pass
 
 class Project(Property.Handler):
     """
@@ -63,10 +61,10 @@ class Project(Property.Handler):
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            PropertyListAdapter('platforms', True, StringProperty),
-            PropertyListAdapter('dependencies', True, DependencyProperty),
-            PropertyListAdapter('options', True, StringProperty),
-            PropertyListAdapter('branches', True, SubProperty, sub_class=Branch)
+            ExtensionPropertyListAdapter('platforms', True, StringProperty),
+            ExtensionPropertyListAdapter('dependencies', True, DependencyProperty),
+            ExtensionPropertyListAdapter('options', True, StringProperty),
+            ExtensionPropertyListAdapter('branches', True, SubProperty, PropertyAdapter.Arguments(Branch))
         ]
         Property.Handler.__init__(self, properties, data)
 

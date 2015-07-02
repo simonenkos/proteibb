@@ -2,6 +2,7 @@ import unittest
 
 from proteibb.core import properties
 
+
 class PropertyTestCase(unittest.TestCase):
 
     def test_string_property(self):
@@ -118,7 +119,7 @@ class PropertyTestCase(unittest.TestCase):
                 ]
                 properties.Property.Handler.__init__(self, internal_props, data)
 
-        sp = properties.SubProperty('extensions', SubPropertyHandler)
+        sp = properties.SubProperty('extensions', True, SubPropertyHandler)
         self.assertEqual(sp.get_name(), 'extensions')
         self.assertEqual(sp.get_value(), None)
         self.assertEqual(sp.is_optional(), True)
@@ -165,12 +166,26 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, ep.set_value, "abc-cde")
         self.assertRaises(SyntaxError, ep.set_value, "abcdefg")
         self.assertEqual(ep.set_value("-test-str"), None)
-        self.assertEqual(ep.get_value(), {'ext': '-', 'val': 'test-str'})
+        self.assertEqual(ep.get_value(), {'mod': '-', 'val': 'test-str'})
         self.assertEqual(ep.set_value("+test-str-other"), None)
-        self.assertEqual(ep.get_value(), {'ext': '+', 'val': 'test-str-other'})
+        self.assertEqual(ep.get_value(), {'mod': '+', 'val': 'test-str-other'})
 
     def test_extension_list_property(self):
-        pass
+        elp = properties.PropertyListAdapter('elp', False, properties.ExtensionAdapter,
+                                             properties.PropertyAdapter.Arguments(True, properties.StringProperty))
+        self.assertEqual(elp.get_name(), 'elp')
+        self.assertEqual(elp.get_value(), [])
+        self.assertEqual(elp.is_optional(), False)
+        self.assertRaises(SyntaxError, elp.set_value, 12345)
+        self.assertRaises(SyntaxError, elp.set_value, '')
+        self.assertRaises(SyntaxError, elp.set_value, [])
+        self.assertRaises(SyntaxError, elp.set_value, [12345, 54321])
+        self.assertRaises(SyntaxError, elp.set_value, [''])
+        self.assertRaises(SyntaxError, elp.set_value, ['abc', 'cde'])
+        self.assertEqual(elp.set_value(['-aaa', '+bbb']), None)
+        self.assertEqual(len(elp.get_value()), 2)
+        self.assertEqual(elp.get_value()[0], {'mod': '-', 'val': 'aaa'})
+        self.assertEqual(elp.get_value()[1], {'mod': '+', 'val': 'bbb'})
 
 if __name__ == '__main__':
     unittest.main()

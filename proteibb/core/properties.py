@@ -1,9 +1,8 @@
-import re
 import rfc3987
 
 from proteibb.util import *
-from proteibb.util.property import *
 from proteibb.util.dependency import *
+from proteibb.util.traits import *
 
 # General properties.
 
@@ -64,10 +63,12 @@ class DependencyProperty(Property):
 
 class SubProperty(Property):
 
-    def __init__(self, name, sub_class, is_optional=True):
+    def __init__(self, name, is_optional, cls):
+        if not issubclass(cls, Property.Handler):
+            raise TypeError('invalid sub property class type')
         Property.__init__(self, name, None, is_optional)
-        self._sub_class = sub_class
+        self._sub_cls = cls
         self._set_validator(lambda val: isinstance(val, dict))
 
     def _apply_new_value(self, value):
-        self._value = self._sub_class(value)
+        self._value = self._sub_cls(value)

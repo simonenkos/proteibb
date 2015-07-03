@@ -1,40 +1,42 @@
 import unittest
 
-from proteibb.util.extensible_mixin import ExtensibleMixin
+from proteibb.util.extension import *
 
 
-class ExtensibleMixinTestCase(unittest.TestCase):
+class ExtensionTestCase(unittest.TestCase):
 
-    class EM1(ExtensibleMixin):
+    class EM1(ExtensionMixin):
 
         def __init__(self, data):
-            self._container = data
-            ExtensibleMixin.__init__(self, self._container)
+            self._data = data
+
+        def _container(self):
+            return self._data
 
         def get(self):
-            return self._container
+            return self._data
 
     class EM2(EM1):
 
         def __init__(self, data):
-            ExtensibleMixinTestCase.EM1.__init__(self, data)
+            ExtensionTestCase.EM1.__init__(self, data)
 
         def include(self, value):
-            self._container = value
+            self._data = value
 
-    def test_extensible_mixin_object_container(self):
+    def test_extension_mixin_object_container(self):
         data = 'abcdef'
-        emt = ExtensibleMixinTestCase.EM1(data)
+        emt = ExtensionTestCase.EM1(data)
         self.assertEqual(emt.get(), 'abcdef')
         self.assertEqual(emt.include('a'), None)
         self.assertEqual(emt.get(), 'abcdef')
         self.assertEqual(emt.exclude('b'), True)
         self.assertEqual(emt.get(), 'abcdef')
 
-    def test_extensible_mixin_object_with_mixin_container(self):
-        data = ExtensibleMixinTestCase.EM2('abcdef')
-        emt = ExtensibleMixinTestCase.EM1(data)
-        self.assertTrue(isinstance(emt.get(), ExtensibleMixin))
+    def test_extension_mixin_object_with_mixin_container(self):
+        data = ExtensionTestCase.EM2('abcdef')
+        emt = ExtensionTestCase.EM1(data)
+        self.assertTrue(isinstance(emt.get(), ExtensionMixin))
         self.assertEqual(emt.get().get(), 'abcdef')
         self.assertEqual(emt.include('fedcba'), None)
         self.assertEqual(emt.get().get(), 'fedcba')
@@ -43,9 +45,9 @@ class ExtensibleMixinTestCase(unittest.TestCase):
         self.assertEqual(emt.exclude(123456789), True)
         self.assertEqual(emt.get().get(), 123456789)
 
-    def test_extensible_mixin_list_container(self):
+    def test_extension_mixin_list_container(self):
         data = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        emt = ExtensibleMixinTestCase.EM1(data)
+        emt = ExtensionTestCase.EM1(data)
         self.assertEqual(emt.get(), [1, 2, 3, 4, 5, 6, 7, 8, 9])
         self.assertEqual(emt.include(0), None)
         self.assertEqual(emt.get(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
@@ -81,11 +83,6 @@ class ExtensibleMixinTestCase(unittest.TestCase):
         self.assertEqual(emt.get(), [11, 15, 13])
         self.assertEqual(emt.include('abc'), None)
         self.assertEqual(emt.get(), [11, 15, 13, 'abc'])
-
-    def test_extensible_mixin_list_mixins_container(self):
-        data = [ExtensibleMixinTestCase.EM2('first'), ExtensibleMixinTestCase.EM2('second')]
-        emt = ExtensibleMixinTestCase.EM1(data)
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,14 +1,19 @@
+from copy import deepcopy
+
 from proteibb.core.properties import *
 
 class Branch(Property.Handler):
 
     def __init__(self, data):
+        pparams = PropertyAdapter.Arguments(False, StringProperty)
+        oparams = PropertyAdapter.Arguments(False, StringProperty)
+        dparams = PropertyAdapter.Arguments(False, DependencyProperty)
         properties = [
-            StringProperty('name', is_optional=False),
-            VersionProperty(is_optional=True),
-            PropertyListAdapter('platforms', True, ExtensionAdapter, '', StringProperty),
-            PropertyListAdapter('options', True, ExtensionAdapter, '', StringProperty),
-            PropertyListAdapter('dependencies', True, ExtensionAdapter, '', DependencyProperty),
+            StringProperty('name'),
+            VersionProperty(True),
+            PropertyListAdapter('platforms', True, ExtensionAdapter, pparams),
+            PropertyListAdapter('options', True, ExtensionAdapter, oparams),
+            PropertyListAdapter('dependencies', True, ExtensionAdapter, dparams),
         ]
         Property.Handler.__init__(self, properties, data)
 
@@ -20,14 +25,17 @@ class Branch(Property.Handler):
     def version(self):
         pass
 
-    @Property.Handler.replace
-    def platforms(self):
-        pass
+    def platforms(self, project):
+        return self._get_extension_properties(project, 'platforms')
 
-    @Property.Handler.replace
-    def options(self):
-        pass
+    def dependencies(self, project):
+        return self._get_extension_properties(project, 'dependencies')
 
-    @Property.Handler.replace
-    def dependencies(self):
-        pass
+    def options(self, project):
+        return self._get_extension_properties(project, 'options')
+
+    def _get_extension_properties(self, project, name):
+        project_properties = deepcopy(self.properties(project).get(name))
+        for prop in self._properties[name].get_value():
+            prop.apply(project_properties)
+        return project_properties.get_value()

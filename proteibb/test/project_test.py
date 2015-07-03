@@ -1,117 +1,193 @@
 import unittest
 
 from proteibb.core.project import project
-from proteibb.core.project import branch
 
 class ProjectTestCase(unittest.TestCase):
 
-    def test_project_no_details(self):
+    # def test_project_no_data(self):
+    #     data = {}
+    #     self.assertRaises(SyntaxError, project.Project, data)
+    #
+    # def test_project_incomplete_data(self):
+    #     data = {
+    #         'name': 'project',
+    #         'type': 'library',
+    #     }
+    #     self.assertRaises(SyntaxError, project.Project, data)
+    #
+    # def test_project_no_branch_data(self):
+    #     data = {
+    #         'name': 'project',
+    #         'type': 'library',
+    #         'vcs': 'git',
+    #         'url': 'http://gitblit',
+    #         'platforms': ['platformx', 'platformy'],
+    #     }
+    #     self.assertRaises(SyntaxError, project.Project, data)
+    #
+    # def test_project_empty_branch_data(self):
+    #     data = {
+    #         'name': 'project',
+    #         'type': 'library',
+    #         'vcs': 'git',
+    #         'url': 'http://gitblit',
+    #         'platforms': ['platformx', 'platformy'],
+    #         'branches': []
+    #     }
+    #     self.assertRaises(SyntaxError, project.Project, data)
+    #
+    # def test_project_incomplete_branch_data(self):
+    #     data = {
+    #         'name': 'project',
+    #         'type': 'library',
+    #         'vcs': 'git',
+    #         'url': 'http://gitblit',
+    #         'platforms': ['platformx', 'platformy'],
+    #         'branches': [
+    #             {
+    #                 'version': '1.2'
+    #             }
+    #         ]
+    #     }
+    #     self.assertRaises(SyntaxError, project.Project, data)
+    #
+    # def test_project_complete_data_simple(self):
+    #     data = {
+    #         'name': 'project',
+    #         'type': 'library',
+    #         'vcs': 'git',
+    #         'url': 'http://gitblit',
+    #         'branches': [
+    #             {
+    #                 'name': 'master',
+    #                 'version': '0.7'
+    #             }
+    #         ]
+    #     }
+    #     p = project.Project(data)
+    #     self.assertEqual(p.name(), 'project')
+    #     self.assertEqual(p.type(), 'library')
+    #     self.assertEqual(p.vcs(), 'git')
+    #     self.assertEqual(p.url(), 'http://gitblit')
+    #     self.assertEqual(len(p.branches()), 1)
+    #     self.assertEqual(p.branches()[0].name(), 'master')
+    #     self.assertEqual(p.branches()[0].version(), [0, 7])
+
+    def test_project_complete_data_full(self):
         data = {
             'name': 'project',
             'type': 'application',
             'vcs': 'svn',
             'url': 'http://subversion',
-            'platforms': ['platformx', 'platformy'],
+            'platforms': [
+                'x86',
+                'arm'
+            ],
+            'options': [
+                'option_a',
+                'option_b',
+                'option_c',
+                'option_d'
+            ],
+            'dependencies': [
+                'lib_a:1.0:1.1:1.2:1.3',
+                'lib_b:3.0.17.6',
+                'lib_c:2.0',
+                'lib_d:1.0:1.5'
+            ],
+            'branches': [
+                {
+                    'name': 'trunk',
+                    'version': '2.7',
+                    'options': [
+                        '-option_b',
+                        '-option_d',
+                        '+option_x',
+                        '+option_y'
+                    ],
+                    'dependencies': [
+                        '+lib_e:4.3.2',
+                        '+lib_a:1.4'
+                    ]
+                },
+                {
+                    'name': 'release_1',
+                    'version': '1.3',
+                    'platforms': [
+                        '-arm'
+                    ],
+                    'options': [
+                        '-option_c',
+                        '-option_d'
+                    ],
+                    'dependencies': [
+                        '-lib_d',
+                        '-lib_c',
+                        '-lib_b:3.0.17.6',
+                        '+lib_b:3.0.15.1',
+                        '-lib_a:1.3:1.2'
+                    ]
+                },
+                {
+                    'name': 'release_2',
+                    'version': '2.1',
+                    'dependencies': [
+                        '-lib_d:1.5',
+                        '+lib_d:1.2:1.3:1.4'
+                    ]
+                }
+            ]
         }
-        self.assertRaises(SyntaxError, project.Project, data, None)
-
-    def test_project_invalid_details(self):
-        detail_data = {
-            'version': '1.9.0'
-        }
-        self.assertRaises(SyntaxError, branch.Detail, detail_data)
-
-    def test_project_no_extensions(self):
-        data = {
-            'name': 'project',
-            'type': 'application',
-            'vcs': 'svn',
-            'url': 'http://subversion',
-            'platforms': ['platformx', 'platformy'],
-            'options': ['optionx', 'optiony']
-        }
-        detail_data = {
-            'branch': 'brancha',
-            'version': '1.0',
-        }
-        p = project.Project(data, branch.Detail(detail_data))
+        p = project.Project(data)
         self.assertEqual(p.name(), 'project')
         self.assertEqual(p.type(), 'application')
         self.assertEqual(p.vcs(), 'svn')
         self.assertEqual(p.url(), 'http://subversion')
-        self.assertEqual(p.platforms(), ['platformx', 'platformy'])
-        self.assertEqual(p.branch(), 'brancha')
-        self.assertEqual(p.version(), [1, 0])
-        self.assertEqual(p.dependencies(), [])
-        self.assertEqual(p.options(), ['optionx', 'optiony'])
-
-    def test_project_full(self):
-        data = {
-            'name': 'project',
-            'type': 'application',
-            'vcs': 'git',
-            'url': 'http://github.com/user/project',
-            'platforms': ['platformx', 'platformy'],
-            'options': ['optiona', 'optionb', 'optionc', 'optiond'],
-            'dependencies': ['projecta:1.0:2.0:3.0', 'projectb:2.0', 'projectc:3.0:3.2', 'projectf']
-        }
-        detail_data = {
-            'branch': 'branchb',
-            'version': '4.0',
-            'includes': {
-                'platforms': ['platformz'],
-                'options': ['optione', 'optionf', 'optionh'],
-                'dependencies': ['projectd:1.0:1.1:1.2:1.3', 'projectc:1.0:1.2', 'projectf:1.0']
-            },
-            'excludes': {
-                'platforms': ['platformy'],
-                'options': ['optionb', 'optionc'],
-                'dependencies': ['projecta:2.0', 'projectb:2.0', 'projectc:3.0:3.2']
-            }
-        }
-        p = project.Project(data, branch.Detail(detail_data))
-        self.assertEqual(p.name(), 'project')
-        self.assertEqual(p.type(), 'application')
-        self.assertEqual(p.vcs(), 'git')
-        self.assertEqual(p.url(), 'http://github.com/user/project')
-        self.assertEqual(p.platforms(), ['platformx', 'platformz'])
-        self.assertEqual(p.branch(), 'branchb')
-        self.assertEqual(p.version(), [4, 0])
-        self.assertEqual(len(p.dependencies()), 4)
-        self.assertEqual(p.dependencies()[0].get_name(), 'projecta')
-        self.assertEqual(p.dependencies()[0].get_versions(), [[1, 0], [3, 0]])
-        self.assertEqual(p.dependencies()[1].get_name(), 'projectc')
-        self.assertEqual(p.dependencies()[1].get_versions(), [[1, 0], [1, 2]])
-        self.assertEqual(p.dependencies()[2].get_name(), 'projectf')
-        self.assertEqual(p.dependencies()[2].get_versions(), [[1, 0]])
-        self.assertEqual(p.dependencies()[3].get_name(), 'projectd')
-        self.assertEqual(p.dependencies()[3].get_versions(), [[1, 0], [1, 1], [1, 2], [1, 3]])
-        self.assertEqual(p.options(), ['optiona', 'optiond', 'optione', 'optionf', 'optionh'])
-
-    def test_branch_and_version_replace(self):
-        data = {
-            'name': 'libx',
-            'type': 'library',
-            'vcs': 'hg',
-            'url': 'http://mercutial',
-            'platforms': ['platforma'],
-            'branch': 'branch_default',
-            'version': '1.0.0.0'
-        }
-        detail_data = {
-            'branch': 'branchx',
-            'version': '1.0.2.0'
-        }
-        p = project.Project(data, branch.Detail(detail_data))
-        self.assertEqual(p.name(), 'libx')
-        self.assertEqual(p.type(), 'library')
-        self.assertEqual(p.vcs(), 'hg')
-        self.assertEqual(p.url(), 'http://mercutial')
-        self.assertEqual(p.platforms(), ['platforma'])
-        self.assertEqual(p.branch(), 'branchx')
-        self.assertEqual(p.version(), [1, 0, 2, 0])
-        self.assertEqual(p.dependencies(), [])
-        self.assertEqual(p.options(), [])
+        b = p.branches()
+        self.assertEqual(len(b), 3)
+        # first branch
+        self.assertEqual(b[0].name(), 'trunk')
+        self.assertEqual(b[0].version(), [2, 7])
+        self.assertEqual(b[0].platforms(p), ['x86', 'arm'])
+        self.assertEqual(b[0].options(p), ['option_a', 'option_c', 'option_x', 'option_y'])
+        bd = b[0].dependencies(p)
+        self.assertEqual(len(bd), 5)
+        self.assertEqual(bd[0].get_name(), 'lib_a')
+        self.assertEqual(bd[0].get_versions(), [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]])
+        self.assertEqual(bd[1].get_name(), 'lib_b')
+        self.assertEqual(bd[1].get_versions(), [[3, 0, 17, 6]])
+        self.assertEqual(bd[2].get_name(), 'lib_c')
+        self.assertEqual(bd[2].get_versions(), [[2, 0]])
+        self.assertEqual(bd[3].get_name(), 'lib_d')
+        self.assertEqual(bd[3].get_versions(), [[1, 0], [1, 5]])
+        self.assertEqual(bd[4].get_name(), 'lib_e')
+        self.assertEqual(bd[4].get_versions(), [[4, 3, 2]])
+        # second branch
+        self.assertEqual(b[1].name(), 'release_1')
+        self.assertEqual(b[1].version(), [1, 3])
+        self.assertEqual(b[1].platforms(p), ['x86'])
+        self.assertEqual(b[1].options(p), ['option_a', 'option_b'])
+        bd = b[1].dependencies(p)
+        self.assertEqual(len(bd), 2)
+        self.assertEqual(bd[0].get_name(), 'lib_a')
+        self.assertEqual(bd[0].get_versions(), [[1, 0], [1, 1]])
+        self.assertEqual(bd[1].get_name(), 'lib_b')
+        self.assertEqual(bd[1].get_versions(), [[3, 0, 15, 1]])
+        # third branch
+        self.assertEqual(b[2].name(), 'release_2')
+        self.assertEqual(b[2].version(), [2, 1])
+        self.assertEqual(b[2].platforms(p), ['x86', 'arm'])
+        self.assertEqual(b[2].options(p), ['option_a', 'option_b', 'option_c', 'option_d'])
+        bd = b[2].dependencies(p)
+        self.assertEqual(len(bd), 4)
+        self.assertEqual(bd[0].get_name(), 'lib_a')
+        self.assertEqual(bd[0].get_versions(), [[1, 0], [1, 1], [1, 2], [1, 3]])
+        self.assertEqual(bd[1].get_name(), 'lib_b')
+        self.assertEqual(bd[1].get_versions(), [[3, 0, 17, 6]])
+        self.assertEqual(bd[2].get_name(), 'lib_c')
+        self.assertEqual(bd[2].get_versions(), [[2, 0]])
+        self.assertEqual(bd[3].get_name(), 'lib_d')
+        self.assertEqual(bd[3].get_versions(), [[1, 0], [1, 2], [1, 3], [1, 4]])
 
 if __name__ == '__main__':
     unittest.main()

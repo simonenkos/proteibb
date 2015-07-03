@@ -166,9 +166,9 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, ep.set_value, "abc-cde")
         self.assertRaises(SyntaxError, ep.set_value, "abcdefg")
         self.assertEqual(ep.set_value("-test-str"), None)
-        self.assertEqual(ep.get_value(), {'mod': '-', 'val': 'test-str'})
+        self.assertEqual(ep.get_value(), properties.Extension('-', 'test-str'))
         self.assertEqual(ep.set_value("+test-str-other"), None)
-        self.assertEqual(ep.get_value(), {'mod': '+', 'val': 'test-str-other'})
+        self.assertEqual(ep.get_value(), properties.Extension('+', 'test-str-other'))
 
     def test_extension_list_property(self):
         elp = properties.PropertyListAdapter('elp', False, properties.ExtensionAdapter,
@@ -184,8 +184,8 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, elp.set_value, ['abc', 'cde'])
         self.assertEqual(elp.set_value(['-aaa', '+bbb']), None)
         self.assertEqual(len(elp.get_value()), 2)
-        self.assertEqual(elp.get_value()[0], {'mod': '-', 'val': 'aaa'})
-        self.assertEqual(elp.get_value()[1], {'mod': '+', 'val': 'bbb'})
+        self.assertEqual(elp.get_value()[0], properties.Extension('-', 'aaa'))
+        self.assertEqual(elp.get_value()[1], properties.Extension('+', 'bbb'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,12 +1,13 @@
 import re
 
 from proteibb.util.property import Property
-from proteibb.util.extensible_mixin import ExtensibleMixin
+from proteibb.util.extension import Extension, ExtensionMixin
 
 
 class PropertyAdapter(Property):
     """
-
+    General class describing an adapter for a property which can change
+    value of the property to have specific behavior.
     """
     class Arguments:
 
@@ -24,8 +25,10 @@ class PropertyAdapter(Property):
         Property.__init__(self, name, default_value, is_optional)
         # Validator should be set by successor.
 
-    def _make(self):
-        return self._cls('temporary', *self._cls_args.args, **self._cls_args.kwargs)
+    def _make(self, value):
+        prop = self._cls('temporary', *self._cls_args.args, **self._cls_args.kwargs)
+        prop.set_value(value)
+        return prop.get_value()
 
 
 class PropertyListAdapter(PropertyAdapter):
@@ -39,18 +42,18 @@ class PropertyListAdapter(PropertyAdapter):
     def _apply_new_value(self, values_list):
         self._value = []
         for value in values_list:
-            prop = self._make()
-            prop.set_value(value)
-            self._value.append(prop.get_value())
+            self._value.append(self._make(value))
 
-
-class ExtensionPropertyListAdapter(PropertyListAdapter, ExtensibleMixin):
+class ExtensionPropertyListAdapter(PropertyListAdapter, ExtensionMixin):
     """
     List adapter with extensible interface.
     """
     def __init__(self, name, is_optional, cls, cls_args=PropertyAdapter.Arguments()):
         PropertyListAdapter.__init__(self, name, is_optional, cls, cls_args)
-        ExtensibleMixin.__init__(self, self._value)
+        # ExtensionMixin.__init__(self)
+
+    def _container(self):
+        return self._value
 
 class ExtensionAdapter(PropertyAdapter):
     """
@@ -61,17 +64,4 @@ class ExtensionAdapter(PropertyAdapter):
         self._set_validator(lambda val: isinstance(val, str) and re.match('^(?:\+|\-)(?!\+|\-).+', val))
 
     def _apply_new_value(self, value):
-        modification = value[0]
-        prop = self._make()
-        prop.set_value(value[1:])
-        self._value = {'mod': modification, 'val': prop.get_value()}
-
-    def apply(self, property_list):
-        if not isinstance(property_list, ExtensionPropertyListAdapter):
-            raise TypeError('unknown type of property list')
-        ext_mod = self.get_value()['mod']
-        ext_val = self.get_value()['val']
-        if ext_mod == '+':
-            property_list.include(ext_val)
-        else:
-            property_list.exclude(ext_val)
+        self._value = Extension(value[0], self._make(value[1:]))

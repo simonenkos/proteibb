@@ -1,5 +1,3 @@
-import re
-
 from copy import deepcopy
 
 class Property:
@@ -8,7 +6,7 @@ class Property:
     have a name and a value that need to be set up and checked
     for correctness.
     """
-    def __init__(self, name, default_value=None, is_optional=False):
+    def __init__(self, name, default_value=None, is_optional=False, *args, **kwargs):
         self._name = name
         self._value = default_value
         self._is_optional = is_optional
@@ -39,44 +37,6 @@ class Property:
     def _apply_new_value(self, value):
         self._value = value
 
-    # class NoExpandException(Exception):
-    #     pass
-    #
-    # @staticmethod
-    # def is_available_for_extend(dst, src, method):
-    #     if not isinstance(dst, Property) or not isinstance(src, Property) or type(dst) != type(src):
-    #         return False
-    #     if dst.get_name() != src.get_name():
-    #         return False
-    #     # Check methods was implemented.
-    #     try:
-    #         method(None)
-    #         return True
-    #     except Property.NoExpandException:
-    #         return False
-    #     except:
-    #         return True
-    #
-    # def include_value(self, value):
-    #     raise Property.NoExpandException
-    #
-    # def exclude_value(self, value):
-    #     raise Property.NoExpandException
-    #
-    # # A property changing policies.
-    #
-    # @staticmethod
-    # def include(dst_prop, src_prop):
-    #     if not Property.is_available_for_extend(dst_prop, src_prop, dst_prop.include_value):
-    #         raise TypeError('cannot append a new value to a property: not available for extend')
-    #     dst_prop.include_value(src_prop.get_value())
-    #
-    # @staticmethod
-    # def exclude(dst_prop, src_prop):
-    #     if not Property.is_available_for_extend(dst_prop, src_prop,  dst_prop.exclude_value):
-    #         raise TypeError('cannot remove a value from a property: not available for extend')
-    #     dst_prop.exclude_value(src_prop.get_value())
-
     # A handler that helps to manipulate with properties.
 
     class LookupError(Exception):
@@ -103,3 +63,9 @@ class Property:
                     raise Property.LookupError(prop_name)
                 return self._properties[prop_name].get_value()
             return get_property_value
+
+        @staticmethod
+        def properties(handler):
+            if not isinstance(handler, Property.Handler):
+                raise TypeError('invalid type of a property handler')
+            return handler._properties

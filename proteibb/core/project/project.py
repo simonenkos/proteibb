@@ -64,7 +64,7 @@ class Project(Property.Handler):
             ExtensionPropertyListAdapter('platforms', True, StringProperty),
             ExtensionPropertyListAdapter('dependencies', True, DependencyProperty),
             ExtensionPropertyListAdapter('options', True, StringProperty),
-            ExtensionPropertyListAdapter('branches', True, SubProperty, PropertyAdapter.Arguments(Branch))
+            PropertyListAdapter('branches', False, SubProperty, PropertyAdapter.Arguments(False, Branch))
         ]
         Property.Handler.__init__(self, properties, data)
 
@@ -86,13 +86,4 @@ class Project(Property.Handler):
 
     @Property.Handler.replace
     def branches(self):
-        pass
-
-    def platforms(self, branch):
-        pass
-
-    def dependencies(self, branch):
-        pass
-
-    def options(self, branch):
         pass

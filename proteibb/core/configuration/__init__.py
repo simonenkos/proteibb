@@ -6,7 +6,7 @@ class ConfigurationFactory(SimpleFactory):
         SimpleFactory.__init__(self)
 
     def make(self, *args, **kwargs):
-        if not kwargs.has_key('conf_name'):
+        if 'conf_name' in kwargs:
             raise SyntaxError('invalid arguments passed to configuration factory')
         for cls in self._registry:
             if cls.__name__.lower() == kwargs['conf_name'].lower():

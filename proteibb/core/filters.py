@@ -1,4 +1,5 @@
 import os.path
+from numpy.core.multiarray import broadcast
 
 from proteibb.util import *
 from proteibb.util.filter import *
@@ -29,8 +30,13 @@ class VcsFilter(Filter):
     def make_change_sources(self, project_list):
         cs_list = []
         for project in project_list:
-            cs = self.make(project)
-            cs_list.append(cs)
+            cs = self.change_source(project)
+            try:
+                iter(cs)
+            except TypeError:
+                cs_list.append(cs)
+            else:
+                cs_list.extend(cs)
         return cs_list
 
     def change_source(self, project):
@@ -42,9 +48,9 @@ class GitFilter(VcsFilter):
         VcsFilter.__init__(self, 'git')
 
     def change_source(self, project):
-        branch = project.branch()
+        branch_list = [branch.name() for branch in project.branches()]
         return changes.GitPoller(repourl=project.url(),
-                                 branches=([branch] if len(branch) else []),
+                                 branches=branch_list,
                                  project=project.name())
 
 class SvnFilter(VcsFilter):
@@ -53,15 +59,16 @@ class SvnFilter(VcsFilter):
         VcsFilter.__init__(self, 'svn')
 
     def change_source(self, project):
+        cs_list = []
         url = project.url()
-        branch = project.branch()
-        if len(branch):
-            if not url.endswith('/'):
-                url += '/'
-            url += branch
-        return changes.SVNPoller(svnurl=url,
-                                 split_file=util.svn.split_file_branches,
-                                 project=project.name())
+        if not url.endswith('/'):
+            url += '/'
+        for branch in project.branches():
+            cs = changes.SVNPoller(svnurl=(url + branch.name()),
+                                   split_file=util.svn.split_file_branches,
+                                   project=project.name())
+            cs_list.append(cs)
+        return cs_list
 
 class HgFilter(VcsFilter):
 
@@ -69,11 +76,13 @@ class HgFilter(VcsFilter):
         VcsFilter.__init__(self, 'hg')
 
     def change_source(self, project):
-        branch = project.branch()
-        version = project.version()
-        work_dir = os.path.join(project.name().lower(),
-                                (make_version(version) if version else ''),
-                                branch)
-        return changes.HgPoller(repourl=project.url(),
-                                branch=(branch if len(branch) else None),
-                                workdir=work_dir)
+        cs_list = []
+        for branch in project.branches():
+            work_dir = os.path.join(project.name(),
+                                    make_version(branch.version()),
+                                    branch.name())
+            cs = changes.HgPoller(repourl=project.url(),
+                                  branch=branch.name(),
+                                  workdir=work_dir)
+            cs_list.append(cs)
+        return cs_list

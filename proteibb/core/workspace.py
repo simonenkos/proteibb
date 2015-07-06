@@ -4,13 +4,12 @@ from os import listdir
 from os.path import isfile, join, splitext
 
 from proteibb.core.project.project import Project
-from proteibb.core.project.branch import prepare_project_details
 from proteibb.core.configuration import conf_factory
 
 class Workspace:
     """
     This class loads a structure of the build system into
-    a set of projects and configuration structure.
+    a set of projects and a configuration structure.
     """
     def __init__(self, base_path):
         self._configurations = []
@@ -40,10 +39,8 @@ class Workspace:
         self._configurations.append(conf)
 
     def _add_projects(self, name, data):
-        details = prepare_project_details(data)
-        for d in details:
-            project = Project(data, d)
-            self._projects.append(project)
+        project = Project(data)
+        self._projects.append(project)
 
     def get_configuration(self, configuration_filter):
         return configuration_filter(self._configurations)

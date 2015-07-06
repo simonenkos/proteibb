@@ -46,7 +46,7 @@ class OptionBase(Property.Handler):
         properties = [
             StringProperty('name', is_optional=False),
             StringProperty('description', is_optional=False),
-            PropertyListAdapter(DependencyProperty, 'dependencies', is_optional=True),
+            PropertyListAdapter('dependencies', True, DependencyProperty),
         ]
         if additional_options:
             properties.extend(additional_options)

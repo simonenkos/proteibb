@@ -1,5 +1,4 @@
 import os.path
-from numpy.core.multiarray import broadcast
 
 from proteibb.util import *
 from proteibb.util.filter import *

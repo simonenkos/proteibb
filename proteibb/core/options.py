@@ -1,9 +1,9 @@
 from proteibb.core.properties import *
-from proteibb.util.simple_factory import *
+from proteibb.util.factory import *
 
-class Options:
+class OptionsGroup:
     """
-    Example of options.json configuration file:
+    Example of options list which could be used in some json file:
     {
         "option-ab-group-name" : [
             {
@@ -28,7 +28,7 @@ class Options:
     def __init__(self, data, option_factory):
         if not isinstance(data, dict):
             raise SyntaxError("invalid 'options.json' structure")
-        if not isinstance(option_factory, SimpleFactory):
+        if not isinstance(option_factory, FactoryInterface):
             raise TypeError("invalid option factory type")
         self._option_groups = {}
         for group_name, group_options in data.items():

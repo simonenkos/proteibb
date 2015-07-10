@@ -50,10 +50,12 @@ class ExtensionPropertyListAdapter(PropertyListAdapter, ExtensionMixin):
     """
     def __init__(self, name, is_optional, cls, cls_args=PropertyAdapter.Arguments()):
         PropertyListAdapter.__init__(self, name, is_optional, cls, cls_args)
-        # ExtensionMixin.__init__(self)
 
     def _container(self):
         return self._value
+
+    def __eq__(self, other):
+        raise NotImplementedError()
 
 class ExtensionAdapter(PropertyAdapter):
     """

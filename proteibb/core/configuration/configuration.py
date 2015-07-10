@@ -6,14 +6,12 @@ class Configuration(Property.Handler):
     {
         "svnuser" : "username",
         "svnpass" : "userpassword",
-        "builder" : "builder-name"
     }
     """
     def __init__(self, data):
         properties = [
             StringProperty('svnuser'),
             StringProperty('svnpass'),
-            StringProperty('builder')
         ]
         Property.Handler.__init__(self, properties, data)
 
@@ -23,8 +21,4 @@ class Configuration(Property.Handler):
 
     @Property.Handler.replace
     def svnpass(self):
-        pass
-
-    @Property.Handler.replace
-    def builder(self):
         pass

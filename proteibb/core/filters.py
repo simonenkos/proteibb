@@ -2,12 +2,13 @@ import os.path
 
 from proteibb.util import *
 from proteibb.util.filter import *
+from proteibb.core.configuration import configuration as conf
 from buildbot.plugins import *
 
 class ConfigurationFilter(Filter):
 
     def __init__(self, conf_name):
-        Filter.__init__(self, lambda conf: type(conf).__name__.lower() == conf_name,
+        Filter.__init__(self, lambda config: type(config).__name__.lower() == conf_name,
                         ConfigurationFilter._altering_function)
 
     @staticmethod
@@ -54,7 +55,10 @@ class GitFilter(VcsFilter):
 
 class SvnFilter(VcsFilter):
 
-    def __init__(self):
+    def __init__(self, configuration):
+        if not isinstance(configuration, conf.Configuration):
+            raise TypeError('invalid configuration object was passed to svn filter')
+        self._configuration = configuration
         VcsFilter.__init__(self, 'svn')
 
     def change_source(self, project):
@@ -65,7 +69,9 @@ class SvnFilter(VcsFilter):
         for branch in project.branches():
             cs = changes.SVNPoller(svnurl=(url + branch.name()),
                                    split_file=util.svn.split_file_branches,
-                                   project=project.name())
+                                   project=project.name(),
+                                   svnuser=self._configuration.svnuser(),
+                                   svnpasswd=self._configuration.svnpass())
             cs_list.append(cs)
         return cs_list
 

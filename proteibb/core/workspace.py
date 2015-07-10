@@ -4,7 +4,8 @@ from os import listdir
 from os.path import isfile, join, splitext
 
 from proteibb.core.project.project import Project
-from proteibb.core.configuration import conf_factory
+from proteibb.core.configuration import configuration_factory
+from proteibb.core.builder import builder_factory
 
 class Workspace:
     """
@@ -13,12 +14,13 @@ class Workspace:
     """
     def __init__(self, base_path):
         self._configurations = []
+        self._builders = []
         self._projects = []
 
         if not base_path.endwith('/'):
             base_path.append('/')
 
-        for structure in ['configuration', 'projects']:
+        for structure in ['configuration', 'builders', 'projects']:
             directory = base_path + structure + '/'
             method_name = '_add_' + structure
             method = getattr(self, method_name)
@@ -35,8 +37,12 @@ class Workspace:
                     creation_callback(entry_name, entry_data)
 
     def _add_configuration(self, name, data):
-        conf = conf_factory.make(data, conf_name=name)
+        conf = configuration_factory.make(data, configuration_name=name)
         self._configurations.append(conf)
+
+    def _add_builders(self, name, data):
+        builder = builder_factory.make(data, builder_name=name)
+        self._builders.append(builder)
 
     def _add_projects(self, name, data):
         project = Project(data)

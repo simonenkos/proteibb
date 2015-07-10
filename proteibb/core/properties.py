@@ -1,8 +1,10 @@
 import rfc3987
+import inspect
 
 from proteibb.util import *
 from proteibb.util.dependency import *
 from proteibb.util.traits import *
+from proteibb.util.factory import *
 
 # General properties.
 
@@ -72,3 +74,18 @@ class SubProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = self._sub_cls(value)
+
+class GroupProperty(Property):
+
+    def __init__(self, name, is_optional, factory, group_cls, *args, **kwargs):
+        if not isinstance(factory, FactoryInterface):
+            raise TypeError('invalid factory type')
+        if not inspect.isclass(group_cls):
+            raise TypeError('invalid group type')
+        Property.__init__(self, name, {}, is_optional, *args, **kwargs)
+        self._set_validator(lambda val: isinstance(val, dict) and len(val))
+        self._factory = factory
+        self._group_cls = group_cls
+
+    def _apply_new_value(self, value):
+        self._value = self._group_cls(value, self._factory)

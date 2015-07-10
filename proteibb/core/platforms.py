@@ -1,8 +1,9 @@
-from proteibb.util.simple_factory import *
+from proteibb.core.properties import *
+from proteibb.util.factory import *
 
-class Platforms:
+class PlatformsGroup:
     """
-    Example of platfroms.json configuration file:
+    Example of platforms list which could be used in some json file:
     {
         "platforma" : { builder-dependent-platforma-info },
         "platformb" : { builder-dependent-platformb-info },
@@ -11,7 +12,7 @@ class Platforms:
     def __init__(self, data, platform_factory):
         if not isinstance(data, dict):
             raise SyntaxError("invalid 'platforms.json' structure")
-        if not isinstance(platform_factory, SimpleFactory):
+        if not isinstance(platform_factory, FactoryInterface):
             raise TypeError("invalid platform factory provided")
         self._platforms = {}
         for platform_name, platform_data in data.items():
@@ -19,3 +20,17 @@ class Platforms:
 
     def get_platform(self, platform_name):
         return self._platforms[platform_name]
+
+class PlatformBase(Property.Handler):
+
+    def __init__(self, data, additional_properties=None):
+        properties = [
+            StringProperty('name')
+        ]
+        if additional_properties:
+            properties.extend(additional_properties)
+        Property.Handler.__init__(self, properties, data)
+
+    @Property.Handler.replace
+    def name(self):
+        pass

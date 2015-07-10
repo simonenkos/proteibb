@@ -1,6 +1,7 @@
 import unittest
 
 from proteibb.core import properties
+from proteibb.util.factory import ObjectFactory
 
 
 class PropertyTestCase(unittest.TestCase):
@@ -186,6 +187,38 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(len(elp.get_value()), 2)
         self.assertEqual(elp.get_value()[0], properties.Extension('-', 'aaa'))
         self.assertEqual(elp.get_value()[1], properties.Extension('+', 'bbb'))
+
+    def test_options_factory_property(self):
+
+        class TestGroup:
+
+            def __init__(self, fhc_data, factory):
+                self._data = fhc_data
+                self._factory = factory
+
+            def get_data(self):
+                return self._data
+
+            def get_factory(self):
+                return self._factory
+
+        data = {
+            'x': 1,
+            'y': 2,
+            'z': 3,
+        }
+        of = ObjectFactory()
+        fp = properties.GroupProperty('fp', True, of, TestGroup)
+        self.assertEqual(fp.get_name(), 'fp')
+        self.assertEqual(fp.get_value(), {})
+        self.assertEqual(fp.is_optional(), True)
+        self.assertRaises(SyntaxError, fp.set_value, 12345)
+        self.assertRaises(SyntaxError, fp.set_value, '')
+        self.assertRaises(SyntaxError, fp.set_value, [])
+        self.assertEqual(fp.set_value(data), None)
+        self.assertEqual(fp.get_value().get_data(), data)
+        self.assertEqual(fp.get_value().get_factory(), of)
+
 
 if __name__ == '__main__':
     unittest.main()

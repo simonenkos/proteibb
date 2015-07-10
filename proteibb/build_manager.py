@@ -15,8 +15,9 @@ class BuildManager:
     def get_change_sources(self):
         library_filter = filters.TypeFilter('library')
         libraries = self._ws.get_projects(library_filter)
+        configuration = self._ws.get_configuration(filters.ConfigurationFilter)
         cs_filter = filters.apply_filter_set_parallel(filters.GitFilter(),
-                                                      filters.SvnFilter(),
+                                                      filters.SvnFilter(configuration),
                                                       filters.HgFilter())
         return cs_filter(libraries)
 

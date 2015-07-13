@@ -10,7 +10,11 @@ class BuildManager:
         self._ws = ws.Workspace(ws_root_path)
 
     def get_slaves(self):
-        pass
+        configuration = self._ws.get_configuration(filters.ConfigurationFilter)
+        slaves_list = []
+        for slave in configuration.slaves():
+            slaves_list.append(slave.make())
+        return slaves_list
 
     def get_change_sources(self):
         library_filter = filters.TypeFilter('library')

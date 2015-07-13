@@ -23,12 +23,7 @@ class PlatformsGroup:
 
 class PlatformBase(Property.Handler):
 
-    def __init__(self, data, additional_properties=None):
-        properties = [
-            StringProperty('name')
-        ]
-        if additional_properties:
-            properties.extend(additional_properties)
+    def __init__(self, data, properties):
         Property.Handler.__init__(self, properties, data)
 
     @Property.Handler.replace

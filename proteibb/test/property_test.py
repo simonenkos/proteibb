@@ -219,6 +219,20 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(fp.get_value().get_data(), data)
         self.assertEqual(fp.get_value().get_factory(), of)
 
+    def test_path_property(self):
+        pp = properties.PathProperty('pp', True)
+        self.assertEqual(pp.get_name(), 'pp')
+        self.assertEqual(pp.get_value(), '')
+        self.assertEqual(pp.is_optional(), True)
+        self.assertRaises(SyntaxError, pp.set_value, 12345)
+        self.assertRaises(SyntaxError, pp.set_value, '')
+        self.assertRaises(SyntaxError, pp.set_value, [])
+        self.assertRaises(SyntaxError, pp.set_value, '//p/')
+        self.assertRaises(SyntaxError, pp.set_value, 'path/to/file')
+        self.assertEqual(pp.set_value('/bin'), None)
+        self.assertEqual(pp.get_value(), '/bin')
+        self.assertEqual(pp.set_value('/bin/../usr'), None)
+        self.assertEqual(pp.get_value(), '/bin/../usr')
 
 if __name__ == '__main__':
     unittest.main()

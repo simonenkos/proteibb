@@ -1,5 +1,6 @@
 import rfc3987
 import inspect
+import os
 
 from proteibb.util import *
 from proteibb.util.dependency import *
@@ -89,3 +90,9 @@ class GroupProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = self._group_cls(value, self._factory)
+
+class PathProperty(Property):
+
+    def __init__(self, name, is_optional=False, *args, **kwargs):
+        Property.__init__(self, name, "", is_optional, *args, **kwargs)
+        self._set_validator(lambda val: isinstance(val, str) and len(val) and os.path.exists(val))

@@ -1,29 +1,38 @@
-from proteibb.util.factory import register_class
 from proteibb.core.builder import builder
 from proteibb.core.options import OptionBase
 from proteibb.core.platforms import PlatformBase
-from proteibb.core.builder.implementations.cppbuilder import *
+from proteibb.core.properties import *
 
 class CppBuilder(builder.Builder):
 
-    def __init__(self, data):
-        builder.Builder.__init__(self, data, options_factory, platforms_factory)
+    options_factory = ObjectFactory()
+    platforms_factory = ObjectFactory()
 
-@register_class(options_factory)
+    def __init__(self, data):
+        builder.Builder.__init__(self, data, CppBuilder.options_factory, CppBuilder.platforms_factory)
+
+@register_class(CppBuilder.options_factory)
 class Option(OptionBase):
 
     def __init__(self, data):
         properties = [
-            # Todo add more properties
+            PropertyListAdapter('defines', True, StringProperty),
+            PropertyListAdapter('external-libs', True, DependencyProperty)
         ]
         OptionBase.__init__(self, data, properties)
 
 
-@register_class(platforms_factory)
+@register_class(CppBuilder.platforms_factory)
 class Platform(PlatformBase):
 
     def __init__(self, data):
         properties = [
-            # Todo add more properties
+            StringProperty('cpp-compiler'),
+            StringProperty('c-compiler'),
+            StringProperty('archiver'),
+            StringProperty('strip'),
+            PathProperty('bin-path', True),
+            PathProperty('lib-path', True),
+            PathProperty('sys-root', True),
         ]
         PlatformBase.__init__(self, data, properties)

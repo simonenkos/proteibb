@@ -7,8 +7,8 @@ from buildbot.plugins import *
 
 class ConfigurationFilter(Filter):
 
-    def __init__(self, conf_name):
-        Filter.__init__(self, lambda config: type(config).__name__.lower() == conf_name,
+    def __init__(self):
+        Filter.__init__(self, lambda config: type(config).__name__.lower() == 'configuration',
                         ConfigurationFilter._altering_function)
 
     @staticmethod

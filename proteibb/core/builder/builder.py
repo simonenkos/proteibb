@@ -7,6 +7,10 @@ class Builder(Property.Handler):
     Example of builder json configuration file:
     {
         "name" : "builder-name",
+        "slaves" : [
+            "slave_x86_release",
+            "slave_x86_debug"
+        ],
         "options" : { ... },
         "platforms" : [ ... ],
     }
@@ -16,7 +20,24 @@ class Builder(Property.Handler):
     def __init__(self, data, options_factory, platforms_factory):
         properties = [
             StringProperty('name'),
+            PropertyListAdapter('slaves', False, StringProperty),
             GroupProperty('options', False, OptionsGroup, options_factory),
             GroupProperty('platforms', True, PlatformsGroup, platforms_factory)
         ]
         Property.Handler.__init__(self, properties, data)
+
+    @Property.Handler.replace
+    def name(self):
+        pass
+
+    @Property.Handler.replace
+    def slaves(self):
+        pass
+
+    @Property.Handler.replace
+    def options(self):
+        pass
+
+    @Property.Handler.replace
+    def platforms(self):
+        pass

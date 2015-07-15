@@ -11,6 +11,9 @@ class CppBuilder(builder.Builder):
     def __init__(self, data):
         builder.Builder.__init__(self, data, CppBuilder.options_factory, CppBuilder.platforms_factory)
 
+    def make_step(self, configuration, projects_data):
+        pass
+
 @register_class(CppBuilder.options_factory)
 class Option(OptionBase):
 

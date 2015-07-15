@@ -29,7 +29,13 @@ class BuildManager:
         pass
 
     def get_builders(self):
-        pass
+        builders = []
+        configuration = self._ws.get_configuration(filters.ConfigurationFilter)
+        library_filter = filters.TypeFilter('library')
+        for lib in self._ws.get_projects(library_filter):
+            # ToDo make this code works
+            builder = self._ws.get_builders(filters.NameFilter(lib.builder()))
+            builders.extend(builder.make(configuration, lib))
 
     def get_status_targets(self):
         pass

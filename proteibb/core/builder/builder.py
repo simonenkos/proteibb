@@ -41,3 +41,6 @@ class Builder(Property.Handler):
     @Property.Handler.replace
     def platforms(self):
         pass
+
+    def make_step(self, configuration, projects_data):
+        raise NotImplementedError()

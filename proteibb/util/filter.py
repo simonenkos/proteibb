@@ -1,13 +1,14 @@
 class Filter:
-
-    def __init__(self, filter_function, altering_function=None):
+    """
+    Utility class that helps with using filters on sets.
+    """
+    def __init__(self, filter_function):
         if not filter_function:
-            raise TypeError('invalid filter function passed')
+            raise TypeError('invalid filter function was passed')
         self._filter = filter_function
-        self._altering = (altering_function if altering_function else (lambda x: x))
 
     def __call__(self, *args, **kwargs):
-        return self._altering(filter(self._filter, *args))
+        return filter(self._filter, *args)
 
 def apply_filter_set_serial(*args):
     def processor(objects):

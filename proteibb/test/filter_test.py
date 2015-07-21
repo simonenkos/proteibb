@@ -1,6 +1,7 @@
 import unittest
 
 from proteibb.util.filter import *
+from proteibb.util.traits.altering_filter import *
 
 class FilterTestCase(unittest.TestCase):
 
@@ -12,7 +13,7 @@ class FilterTestCase(unittest.TestCase):
         self.assertEqual(f([1, 2, 'a', None, 'b']), [1, 2, 'a', None, 'b'])
 
     def test_altering_filter(self):
-        f = Filter((lambda x: x <= 10), (lambda lst: [str(y - 5) for y in lst]))
+        f = AlteringFilter((lambda x: x <= 10), (lambda e: str(e - 5)))
         self.assertEqual(f(range(5, 15)), ['0', '1', '2', '3', '4', '5'])
 
     def test_filter_set_serial_processing(self):

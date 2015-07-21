@@ -7,14 +7,14 @@ from proteibb.core.project.project import Project
 from buildbot.plugins import *
 
 
-class ProjectFilter(Filter):
+class ProjectFilter(AlteringFilter):
 
     def __init__(self, filter_function, altering_function=None):
         def check(project):
             if not isinstance(project, Project):
                 raise TypeError('invalid object was passed to project filtering function')
             return filter_function(project)
-        Filter.__init__(self, check, altering_function)
+        AlteringFilter.__init__(self, check, altering_function)
 
 
 class TypeFilter(ProjectFilter):

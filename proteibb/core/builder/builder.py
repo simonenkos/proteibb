@@ -2,6 +2,8 @@ from proteibb.core.properties import *
 from proteibb.core.options import OptionsGroup
 from proteibb.core.platforms import PlatformsGroup
 
+from buildbot.plugins import steps
+
 class Builder(Property.Handler):
     """
     Example of builder json configuration file:
@@ -44,3 +46,10 @@ class Builder(Property.Handler):
 
     def make(self, configuration, project):
         raise NotImplementedError()
+
+    def _get_vcs_step(self, project):
+        vcs = project.vcs()
+        getattr(self, )
+
+    def _make_step_git(self, project):
+        pass

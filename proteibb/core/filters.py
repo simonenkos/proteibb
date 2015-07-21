@@ -1,4 +1,4 @@
-from proteibb.util.filter import *
+from proteibb.util.traits.altering_filter import *
 
 
 class EmptyFiler(Filter):
@@ -6,11 +6,11 @@ class EmptyFiler(Filter):
     def __init__(self):
         Filter.__init__(self, lambda obj: True)
 
-class ClassNameFilter(Filter):
+class ClassNameFilter(AlteringFilter):
 
     def __init__(self, desired_name):
-        Filter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name,
-                        ClassNameFilter._altering_function)
+        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name,
+                                ClassNameFilter._altering_function)
 
     @staticmethod
     def _altering_function(obj_list):

@@ -51,5 +51,8 @@ class Workspace:
     def get_configuration(self, configuration_filter):
         return configuration_filter(self._configurations)
 
+    def get_builders(self, builder_filter):
+        return builder_filter(self._builders)
+
     def get_projects(self, project_filter):
         return project_filter(self._projects)

@@ -42,5 +42,5 @@ class Builder(Property.Handler):
     def platforms(self):
         pass
 
-    def make_step(self, configuration, projects_data):
+    def make(self, configuration, project):
         raise NotImplementedError()

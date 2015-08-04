@@ -47,9 +47,13 @@ class Builder(Property.Handler):
     def make(self, configuration, project):
         raise NotImplementedError()
 
-    def _get_vcs_step(self, project):
+    def get_vcs_step(self, project):
         vcs = project.vcs()
-        getattr(self, )
+        maker = getattr(self, 'make_step_' + vcs)
+        return maker()
 
-    def _make_step_git(self, project):
+    def make_step_svn(self, project):
+        pass
+
+    def make_step_git(self, project):
         pass

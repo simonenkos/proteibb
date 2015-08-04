@@ -22,7 +22,13 @@ class CppBuilder(builder.Builder):
 
     def _make_library_build_factory(self, configuration, project):
         factory = util.BuildFactory()
-        # factory.addStep() # ToDo
+        # ToDo: Steps to add:
+        # - Checkout step (not depends on the builder type [nd])
+        # - Find all sources and process them according to valid file extension list and excludes (need to modify
+        # project structure) [nd].
+        # - For each source call compiler with project specific options (depends on type of the builder [d]).
+        # - According to a project type call linker to make app or lib [d]
+        # factory.addStep()
         return factory
 
     def _make_application_build_factory(self, configuration, project):

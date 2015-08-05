@@ -15,12 +15,17 @@ class CppBuilder(builder.Builder):
         builder.Builder.__init__(self, data, CppBuilder.options_factory, CppBuilder.platforms_factory)
 
     def make(self, configuration, project):
-        pt = project.type()
-        factory_maker = getattr(self, '_make_' + pt + '_build_factory')
-        factory = factory_maker(configuration, project)
-        return util.BuilderConfiguration(name=project.name(), slavenames=[], factory=factory)
+        builders = []
+        for branch in project.branches():
+            # CppBuilder.builder_factory[project.type()]()
+        return builders
+        # pt = project.type()
+        # factory_maker = getattr(self, '_make_' + pt + '_build_factory')
+        # factory = factory_maker(configuration, project)
+        # return util.BuilderConfiguration(name=project.name(), slavenames=[], factory=factory)
 
-    def _make_library_build_factory(self, configuration, project):
+    @staticmethod
+    def make_library_build_factory(configuration, project):
         factory = util.BuildFactory()
         # ToDo: Steps to add:
         # - Checkout step (not depends on the builder type [nd])
@@ -31,7 +36,8 @@ class CppBuilder(builder.Builder):
         # factory.addStep()
         return factory
 
-    def _make_application_build_factory(self, configuration, project):
+    @staticmethod
+    def make_application_build_factory(configuration, project):
         pass
 
 

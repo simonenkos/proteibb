@@ -1,8 +1,9 @@
 from proteibb.core.properties import *
 from proteibb.core.options import OptionsGroup
 from proteibb.core.platforms import PlatformsGroup
+from proteibb.core.builder.steps.checkout import checkout_factory
 
-from buildbot.plugins import steps
+from buildbot.plugins import util, steps
 
 class Builder(Property.Handler):
     """
@@ -46,14 +47,3 @@ class Builder(Property.Handler):
 
     def make(self, configuration, project):
         raise NotImplementedError()
-
-    def get_vcs_step(self, project):
-        vcs = project.vcs()
-        maker = getattr(self, 'make_step_' + vcs)
-        return maker()
-
-    def make_step_svn(self, project):
-        pass
-
-    def make_step_git(self, project):
-        pass

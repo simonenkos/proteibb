@@ -5,6 +5,8 @@ from proteibb.core.properties import *
 
 from buildbot.plugins import util
 
+from proteibb.core.builder.steps.checkout import Checkout
+
 
 class CppBuilder(builder.Builder):
 
@@ -17,28 +19,19 @@ class CppBuilder(builder.Builder):
     def make(self, configuration, project):
         builders = []
         for branch in project.branches():
-            # CppBuilder.builder_factory[project.type()]()
+            # ToDo: Steps to add:
+            # - Checkout step (not depends on the builder type [nd])
+            # - Find all sources and process them according to valid file extension list and excludes (need to modify
+            # project structure) [nd].
+            # - For each source call compiler with project specific options (depends on type of the builder [d]).
+            # - According to a project type call linker to make app or lib [d]
+            factory = util.BuildFactory()
+            factory.addStep(Checkout(project.vcs()).get_step(configuration, project.url(), branch))
+            factory.addStep(SetUp(...).get_step())
+            factory.addStep(Build(...).get_step())
+            factory.addStep(Link(...).get_steps())
+            builders.append(util.BuilderCondig(name='to-do', slavenames=[], factory=factory))
         return builders
-        # pt = project.type()
-        # factory_maker = getattr(self, '_make_' + pt + '_build_factory')
-        # factory = factory_maker(configuration, project)
-        # return util.BuilderConfiguration(name=project.name(), slavenames=[], factory=factory)
-
-    @staticmethod
-    def make_library_build_factory(configuration, project):
-        factory = util.BuildFactory()
-        # ToDo: Steps to add:
-        # - Checkout step (not depends on the builder type [nd])
-        # - Find all sources and process them according to valid file extension list and excludes (need to modify
-        # project structure) [nd].
-        # - For each source call compiler with project specific options (depends on type of the builder [d]).
-        # - According to a project type call linker to make app or lib [d]
-        # factory.addStep()
-        return factory
-
-    @staticmethod
-    def make_application_build_factory(configuration, project):
-        pass
 
 
 @register_class(CppBuilder.options_factory)

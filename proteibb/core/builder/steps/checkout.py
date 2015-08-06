@@ -1,42 +1,23 @@
 from buildbot import steps
-from proteibb.util.factory import *
 
-checkout_factory = NamedFactory('co')
+from proteibb.core.builder.step import Step
 
-class Checkout:
+class Checkout(Step):
 
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self._name = name
 
-    def make_step(self, configuration, url, branch):
-        raise NotImplementedError()
+    def get_step(self, configuration, url, branch):
+        maker = getattr(self, '_' + self._name + '_maker')
+        if not maker:
+            raise ValueError('No checkout provided for: ' + self._name)
+        return maker(configuration, url, branch)
 
-
-@register_class(checkout_factory)
-class Git(Checkout):
-
-    def __init__(self):
-        Checkout.__init__(self)
-
-    def make_step(self, configuration, url, branch):
+    def _git_maker(self, configuration, url, branch):
         return steps.Git(repourl=url, branch=branch, mode='full')
 
+    def _svn_maker(self, configuration, url, branch):
+        return steps.SVN(repourl=url, branch=branch, mode='full') # ToDo
 
-@register_class(checkout_factory)
-class Svn(Checkout):
-
-    def __init__(self):
-        Checkout.__init__(self)
-
-    def make_step(self, configuration, url, branch):
-        return steps.SVN()
-
-
-@register_class(checkout_factory)
-class Hg(Checkout):
-
-    def __init__(self):
-        Checkout.__init__(self)
-
-    def make_step(self, configuration, url, branch):
-        return steps.Hg()
+    def _hg_maker(self, configuration, url, branch):
+        return steps.Hg(repourl=url, branch=branch, mode='full') # ToDo

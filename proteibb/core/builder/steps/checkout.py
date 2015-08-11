@@ -3,7 +3,9 @@ from buildbot import steps
 from proteibb.core.builder.step import Step
 
 class Checkout(Step):
-
+    """
+    Class provide methods to create buildbot step for checkout operation.
+    """
     def __init__(self, name):
         self._name = name
 

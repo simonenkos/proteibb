@@ -10,6 +10,7 @@ class Project(Property.Handler):
         "type" : "library|application|test",
         "vcs"  : "svn|git|hg",
         "url"  : "http://url_to_repository",
+        "path" : "path/where/source/code/should/be/stored
         // Common platforms list.
         "platforms" : [
             "arm",
@@ -61,6 +62,7 @@ class Project(Property.Handler):
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
+            StringProperty('path'),
             ExtensionPropertyListAdapter('platforms', True, StringProperty),
             ExtensionPropertyListAdapter('dependencies', True, DependencyProperty),
             ExtensionPropertyListAdapter('options', True, StringProperty),
@@ -82,6 +84,10 @@ class Project(Property.Handler):
 
     @Property.Handler.replace
     def url(self):
+        pass
+
+    @Property.Handler.replace
+    def path(self):
         pass
 
     @Property.Handler.replace

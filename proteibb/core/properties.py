@@ -9,11 +9,13 @@ from proteibb.util.factory import *
 
 # General properties.
 
+
 class StringProperty(Property):
 
     def __init__(self, name, is_optional=False, *args, **kwargs):
         Property.__init__(self, name, "", is_optional, *args, **kwargs)
         self._set_validator(lambda val: isinstance(val, str) and len(val))
+
 
 class EnumerationProperty(Property):
 
@@ -30,16 +32,19 @@ class TypeProperty(EnumerationProperty):
     def __init__(self, is_optional=False, *args, **kwargs):
         EnumerationProperty.__init__(self, 'type', ['library', 'application', 'test'], is_optional, *args, **kwargs)
 
+
 class UrlProperty(Property):
 
     def __init__(self, is_optional=False, *args, **kwargs):
         Property.__init__(self, 'url', "", is_optional, *args, **kwargs)
         self._set_validator(lambda val: isinstance(val, str) and len(val) and rfc3987.match(val, 'URI') is not None)
 
+
 class VcsProperty(EnumerationProperty):
 
     def __init__(self, is_optional=False, *args, **kwargs):
         EnumerationProperty.__init__(self, 'vcs', ['svn', 'git', 'hg'], is_optional, *args, **kwargs)
+
 
 class VersionProperty(Property):
 
@@ -49,6 +54,7 @@ class VersionProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = split_version(value)
+
 
 class DependencyProperty(Property):
 
@@ -64,6 +70,7 @@ class DependencyProperty(Property):
         for version in dep_details[1:]:
             self._value.add_version(split_version(version))
 
+
 class SubProperty(Property):
 
     def __init__(self, name, is_optional, cls, *args, **kwargs):
@@ -75,6 +82,7 @@ class SubProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = self._sub_cls(value)
+
 
 class GroupProperty(Property):
 
@@ -90,6 +98,7 @@ class GroupProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = self._group_cls(value, self._factory)
+
 
 class PathProperty(Property):
 

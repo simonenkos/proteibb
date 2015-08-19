@@ -22,7 +22,7 @@ class Branch(Property.Handler):
         pass
 
     @Property.Handler.replace
-    def version(self):
+    def version(self): # Todo remove?
         pass
 
     def platforms(self, project):

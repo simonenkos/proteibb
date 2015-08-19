@@ -6,11 +6,11 @@ class Project(Property.Handler):
     """
     Example of project configuration json file:
     {
+        "code" : "project_unique_code",
         "name" : "project",
         "type" : "library|application|test",
         "vcs"  : "svn|git|hg",
         "url"  : "http://url_to_repository",
-        "path" : "path/where/source/code/should/be/stored
         // Common platforms list.
         "platforms" : [
             "arm",
@@ -58,17 +58,21 @@ class Project(Property.Handler):
     """
     def __init__(self, data):
         properties = [
+            StringProperty('code'),
             StringProperty('name'),
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
-            StringProperty('path'),
             ExtensionPropertyListAdapter('platforms', True, StringProperty),
             ExtensionPropertyListAdapter('dependencies', True, DependencyProperty),
             ExtensionPropertyListAdapter('options', True, StringProperty),
             PropertyListAdapter('branches', False, SubProperty, PropertyAdapter.Arguments(False, Branch))
         ]
         Property.Handler.__init__(self, properties, data)
+
+    @Property.Handler.replace
+    def code(self):
+        pass
 
     @Property.Handler.replace
     def name(self):
@@ -84,10 +88,6 @@ class Project(Property.Handler):
 
     @Property.Handler.replace
     def url(self):
-        pass
-
-    @Property.Handler.replace
-    def path(self):
         pass
 
     @Property.Handler.replace

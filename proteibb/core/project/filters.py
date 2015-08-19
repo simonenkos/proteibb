@@ -88,8 +88,8 @@ class HgFilter(VcsFilter):
         cs_list = []
         for branch in project.branches():
             work_dir = os.path.join(project.name(),
-                                    make_version(branch.version()),
-                                    branch.name())
+                                    branch.name(),
+                                    make_version(branch.version()))
             cs = changes.HgPoller(repourl=project.url(),
                                   branch=branch.name(),
                                   workdir=work_dir)

@@ -27,10 +27,11 @@ class CppBuilder(builder.Builder):
             # - For each source call compiler with project specific options (depends on type of the builder [d]).
             # - According to a project type call linker to make app or lib [d]
             factory = util.BuildFactory()
-            factory.addStep(Checkout(project.vcs()).get_step(configuration, project.url(), branch))
-            factory.addStep(Setup(...).get_step())
-            factory.addStep(Compile(...).get_step())
-            factory.addStep(Link(...).get_steps())
+            Checkout()
+            # factory.addStep(Checkout(project.vcs(
+            # factory.addStep(Setup(...).get_step())
+            # factory.addStep(Compile(...).get_step())
+            # factory.addStep(Link(...).get_steps())
             builders.append(util.BuilderCondig(name='to-do', slavenames=[], factory=factory))
         return builders
 

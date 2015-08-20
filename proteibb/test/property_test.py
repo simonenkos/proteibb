@@ -77,38 +77,6 @@ class PropertyTestCase(unittest.TestCase):
         self.assertEqual(vp.set_value('5.2'), None)
         self.assertEqual(vp.get_value(), [5, 2])
 
-    def test_dependencies_property(self):
-        dp = properties.DependencyProperty()
-        self.assertEqual(dp.get_name(), 'dependency')
-        self.assertEqual(dp.get_value(), None)
-        self.assertEqual(dp.is_optional(), False)
-        self.assertRaises(SyntaxError, dp.set_value, 12345)
-        self.assertRaises(SyntaxError, dp.set_value, '')
-        self.assertRaises(SyntaxError, dp.set_value, ':')
-        self.assertRaises(SyntaxError, dp.set_value, ':1.0')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:1..0')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:1.0.0:')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:<1000')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:=1.0.0')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:.0.0')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:4.0:4.')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a: 2.0')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:a')
-        self.assertRaises(SyntaxError, dp.set_value, 'lib_a:1.2.5.')
-        self.assertEqual(dp.set_value('lib_a'), None)
-        self.assertEqual(dp.get_value().get_name(), 'lib_a')
-        self.assertEqual(dp.get_value().get_versions(), [])
-        self.assertEqual(dp.set_value('lib_b:1.0:2.0'), None)
-        self.assertEqual(dp.get_value().get_name(), 'lib_b')
-        self.assertEqual(dp.get_value().get_versions(), [[1, 0], [2, 0]])
-        self.assertEqual(dp.set_value('lib_c:1.0'), None)
-        self.assertEqual(dp.get_value().get_name(), 'lib_c')
-        self.assertEqual(dp.get_value().get_versions(), [[1, 0]])
-        self.assertEqual(dp.set_value('lib_d:1.0.5:1.0.7:1.1.14'), None)
-        self.assertEqual(dp.get_value().get_name(), 'lib_d')
-        self.assertEqual(dp.get_value().get_versions(), [[1, 0, 5], [1, 0, 7], [1, 1, 14]])
-
     def test_sub_property(self):
 
         class SubPropertyHandler(properties.Property.Handler):
@@ -231,8 +199,6 @@ class PropertyTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, pp.set_value, 'path/to/file')
         self.assertEqual(pp.set_value('/bin'), None)
         self.assertEqual(pp.get_value(), '/bin')
-        self.assertEqual(pp.set_value('/bin/../usr'), None)
-        self.assertEqual(pp.get_value(), '/bin/../usr')
 
 if __name__ == '__main__':
     unittest.main()

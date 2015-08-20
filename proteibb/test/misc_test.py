@@ -2,6 +2,7 @@ import unittest
 
 from proteibb.util import *
 
+
 class MiscellaneousTestCase(unittest.TestCase):
 
     def test_version_split(self):

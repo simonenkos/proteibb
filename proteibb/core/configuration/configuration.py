@@ -1,6 +1,7 @@
 from proteibb.core.properties import *
 from proteibb.core.configuration.slave import Slave
 
+
 class Configuration(Property.Handler):
     """
     Example of configuration.json file which keeps general information about build system:

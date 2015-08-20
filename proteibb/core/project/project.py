@@ -19,9 +19,9 @@ class Project(Property.Handler):
         ],
         // Common dependencies list.
         "dependencies" : [
-            "projectx:a.b",
+            "projectx",
             "projecty",
-            "projectz:c.d.e:x.y.z"
+            "projectz"
         ],
         // Common options list (for application type only).
         "options" : [
@@ -34,7 +34,7 @@ class Project(Property.Handler):
         "branches" : [
             {
                 "name" : "branch_x",
-                "version" : "a.b.c",
+                "version" : "x.y.z",
                 "platforms" : [
                     "+mips"
                 ],
@@ -44,14 +44,14 @@ class Project(Property.Handler):
                     "-option_disable_feature_z"
                 ],
                 "dependencies" : [
-                    "-projectz:c.d.e",
-                    "+projecta:x.y.z"
+                    "-projectz",
+                    "+projecta"
 
                 ]
             },
             {
                 "name" : 'branch_z",
-                "version" : "x.y.z.w"
+                "version" : "a.b.c",
             },
         ]
     }
@@ -64,7 +64,7 @@ class Project(Property.Handler):
             VcsProperty(),
             UrlProperty(),
             ExtensionPropertyListAdapter('platforms', True, StringProperty),
-            ExtensionPropertyListAdapter('dependencies', True, DependencyProperty),
+            ExtensionPropertyListAdapter('dependencies', True, StringProperty),
             ExtensionPropertyListAdapter('options', True, StringProperty),
             PropertyListAdapter('branches', False, SubProperty, PropertyAdapter.Arguments(False, Branch))
         ]

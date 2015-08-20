@@ -3,6 +3,7 @@ import unittest
 from proteibb.util.filter import *
 from proteibb.util.traits.altering_filter import *
 
+
 class FilterTestCase(unittest.TestCase):
 
     def test_empty_filter(self):

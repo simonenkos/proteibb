@@ -2,12 +2,13 @@ from copy import deepcopy
 
 from proteibb.core.properties import *
 
+
 class Branch(Property.Handler):
 
     def __init__(self, data):
         pparams = PropertyAdapter.Arguments(False, StringProperty)
         oparams = PropertyAdapter.Arguments(False, StringProperty)
-        dparams = PropertyAdapter.Arguments(False, DependencyProperty)
+        dparams = PropertyAdapter.Arguments(False, StringProperty)
         properties = [
             StringProperty('name'),
             VersionProperty(True),
@@ -22,7 +23,7 @@ class Branch(Property.Handler):
         pass
 
     @Property.Handler.replace
-    def version(self): # Todo remove?
+    def version(self):
         pass
 
     def platforms(self, project):

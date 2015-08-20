@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 class Property:
     """
     Class represents an attribute of some configuration which

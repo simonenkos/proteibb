@@ -26,13 +26,15 @@ class CppBuilder(builder.Builder):
             # project structure) [nd].
             # - For each source call compiler with project specific options (depends on type of the builder [d]).
             # - According to a project type call linker to make app or lib [d]
-            factory = util.BuildFactory()
-            Checkout()
-            # factory.addStep(Checkout(project.vcs(
-            # factory.addStep(Setup(...).get_step())
-            # factory.addStep(Compile(...).get_step())
-            # factory.addStep(Link(...).get_steps())
-            builders.append(util.BuilderCondig(name='to-do', slavenames=[], factory=factory))
+
+            for platform in branch.platforms(project):
+                # Make chain of our steps and then proceed each step to get buildbot's step and output data
+                # which should be placed to next step input...
+                chain = [
+                    Checkout(project.vcs(), project.code(), project.url(), branch.name(), platform)
+                ]
+
+
         return builders
 
 

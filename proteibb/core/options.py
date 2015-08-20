@@ -1,6 +1,7 @@
 from proteibb.core.properties import *
 from proteibb.util.factory import *
 
+
 class OptionsGroup:
     """
     Example of options list which could be used in some json file:
@@ -9,12 +10,12 @@ class OptionsGroup:
             {
                 "name" : "optiona",
                 "description" : "Option A description",
-                "dependencies" : "liba:1.2.7"
+                "dependencies" : ["liba"]
             },
             {
                 "name" : "optionb",
                 "description" : "Option B description",
-                "dependencies" : "libb:2.0"
+                "dependencies" : ["libb", "libc"]
             }
         ],
         "option-x-group-name" : [
@@ -40,13 +41,14 @@ class OptionsGroup:
     def get_options(self, group_name):
         return self._option_groups[group_name]
 
+
 class OptionBase(Property.Handler):
 
     def __init__(self, data, additional_options=None):
         properties = [
             StringProperty('name', is_optional=False),
             StringProperty('description', is_optional=False),
-            PropertyListAdapter('dependencies', True, DependencyProperty),
+            PropertyListAdapter('dependencies', True, StringProperty),
         ]
         if additional_options:
             properties.extend(additional_options)

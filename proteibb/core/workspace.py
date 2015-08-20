@@ -7,6 +7,7 @@ from proteibb.core.project.project import Project
 from proteibb.core.configuration import configuration_factory
 from proteibb.core.builder import builder_factory
 
+
 class Workspace:
     """
     This class loads a structure of the build system into

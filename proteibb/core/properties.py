@@ -3,7 +3,6 @@ import inspect
 import os
 
 from proteibb.util import *
-from proteibb.util.dependency import *
 from proteibb.util.traits import *
 from proteibb.util.factory import *
 
@@ -26,6 +25,7 @@ class EnumerationProperty(Property):
         self._set_validator(lambda val: val in enumeration)
 
 # Specialized properties.
+
 
 class TypeProperty(EnumerationProperty):
 
@@ -54,21 +54,6 @@ class VersionProperty(Property):
 
     def _apply_new_value(self, value):
         self._value = split_version(value)
-
-
-class DependencyProperty(Property):
-
-    def __init__(self, is_optional=False, *args, **kwargs):
-        Property.__init__(self, 'dependency', None, is_optional, *args, **kwargs)
-        regex_str = '^(?:\w+)(?:(?::\d+)(?:\.\d+)*)*$'
-        validator = lambda val: isinstance(val, str) and len(val) and re.match(regex_str, val)
-        self._set_validator(validator)
-
-    def _apply_new_value(self, value):
-        dep_details = value.split(':')
-        self._value = Dependency(dep_details[0])
-        for version in dep_details[1:]:
-            self._value.add_version(split_version(version))
 
 
 class SubProperty(Property):

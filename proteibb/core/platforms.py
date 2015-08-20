@@ -1,6 +1,7 @@
 from proteibb.core.properties import *
 from proteibb.util.factory import *
 
+
 class PlatformsGroup:
     """
     Example of platforms list which could be used in some json file:
@@ -20,6 +21,7 @@ class PlatformsGroup:
 
     def get_platform(self, platform_name):
         return self._platforms[platform_name]
+
 
 class PlatformBase(Property.Handler):
 

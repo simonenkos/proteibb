@@ -6,6 +6,7 @@ class EmptyFiler(Filter):
     def __init__(self):
         Filter.__init__(self, lambda obj: True)
 
+
 class ClassNameFilter(AlteringFilter):
 
     def __init__(self, desired_name):

@@ -44,6 +44,7 @@ class PropertyListAdapter(PropertyAdapter):
         for value in values_list:
             self._value.append(self._make(value))
 
+
 class ExtensionPropertyListAdapter(PropertyListAdapter, ExtensionMixin):
     """
     List adapter with extensible interface.
@@ -56,6 +57,7 @@ class ExtensionPropertyListAdapter(PropertyListAdapter, ExtensionMixin):
 
     def __eq__(self, other):
         raise NotImplementedError()
+
 
 class ExtensionAdapter(PropertyAdapter):
     """

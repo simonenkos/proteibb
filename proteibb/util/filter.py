@@ -10,6 +10,7 @@ class Filter:
     def __call__(self, *args, **kwargs):
         return filter(self._filter, *args)
 
+
 def apply_filter_set_serial(*args):
     def processor(objects):
         for a in args:
@@ -18,6 +19,7 @@ def apply_filter_set_serial(*args):
             objects = a(objects)
         return objects
     return processor
+
 
 def apply_filter_set_parallel(*args):
     def processor(objects):

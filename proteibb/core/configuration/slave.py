@@ -2,6 +2,7 @@ from buildbot.plugins import *
 
 from proteibb.core.properties import *
 
+
 class Slave(Property.Handler):
 
     def __init__(self, data):

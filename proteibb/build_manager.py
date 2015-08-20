@@ -1,7 +1,9 @@
 import proteibb.core.workspace as ws
 import proteibb.core.filters as filters
 import proteibb.core.project.filters as project_filters
+
 from proteibb.util.filter import apply_filter_set_parallel, apply_filter_set_serial
+
 
 class BuildManager:
     """Build manager initialises a structure of the build system and make

@@ -1,9 +1,7 @@
 from proteibb.core.properties import *
 from proteibb.core.options import OptionsGroup
 from proteibb.core.platforms import PlatformsGroup
-from proteibb.core.builder.steps.checkout import checkout_factory
 
-from buildbot.plugins import util, steps
 
 class Builder(Property.Handler):
     """

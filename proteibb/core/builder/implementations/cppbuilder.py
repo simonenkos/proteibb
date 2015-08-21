@@ -26,15 +26,18 @@ class CppBuilder(builder.Builder):
             # project structure) [nd].
             # - For each source call compiler with project specific options (depends on type of the builder [d]).
             # - According to a project type call linker to make app or lib [d]
-
             for platform in branch.platforms(project):
-                # Make chain of our steps and then proceed each step to get buildbot's step and output data
-                # which should be placed to next step input...
                 chain = [
-                    Checkout(project.vcs(), project.code(), project.url(), branch.name(), platform)
+                    Checkout(project.vcs(), project.code(), project.url(), branch.name(), platform),
+                    # Todo: Add next steps.
                 ]
-
-
+                build_factory = util.BuildFactory()
+                previous_step_data = None
+                for element in chain:
+                    element.setup(previous_step_data)
+                    previous_step_data = element.data()
+                # ToDo: Figure out which parameter need to be used.
+                builders.append(util.BuilderConfig(name='???', slavenames=[], factory=build_factory))
         return builders
 
 
@@ -44,7 +47,7 @@ class Option(OptionBase):
     def __init__(self, data):
         properties = [
             PropertyListAdapter('defines', True, StringProperty),
-            PropertyListAdapter('external-libs', True, DependencyProperty)
+            PropertyListAdapter('external-libs', True, StringProperty)
         ]
         OptionBase.__init__(self, data, properties)
 

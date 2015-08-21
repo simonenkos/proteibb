@@ -1,10 +1,7 @@
-import os.path
-
-from proteibb.util import *
 from proteibb.core.filters import *
 from proteibb.core.configuration import configuration as conf
 from proteibb.core.project.project import Project
-from buildbot.plugins import *
+from proteibb.core.vcs.vcs import VCS
 
 
 class ProjectFilter(AlteringFilter):
@@ -26,6 +23,7 @@ class TypeFilter(ProjectFilter):
 class VcsFilter(ProjectFilter):
 
     def __init__(self, desired_project_vcs):
+        self._vcs_factory = VCS.make(vcs=desired_project_vcs)
         ProjectFilter.__init__(self, lambda project: project.vsc() == desired_project_vcs, self.make_change_sources)
 
     def make_change_sources(self, project_list):
@@ -41,19 +39,7 @@ class VcsFilter(ProjectFilter):
         return cs_list
 
     def change_source(self, project):
-        raise NotImplementedError()
-
-
-class GitFilter(VcsFilter):
-
-    def __init__(self):
-        VcsFilter.__init__(self, 'git')
-
-    def change_source(self, project):
-        branch_list = [branch.name() for branch in project.branches()]
-        return changes.GitPoller(repourl=project.url(),
-                                 branches=branch_list,
-                                 project=project.name())
+        return self._vcs_factory.change_source(project)
 
 
 class SvnFilter(VcsFilter):
@@ -65,33 +51,16 @@ class SvnFilter(VcsFilter):
         VcsFilter.__init__(self, 'svn')
 
     def change_source(self, project):
-        cs_list = []
-        url = project.url()
-        if not url.endswith('/'):
-            url += '/'
-        for branch in project.branches():
-            cs = changes.SVNPoller(svnurl=(url + branch.name()),
-                                   split_file=util.svn.split_file_branches,
-                                   project=project.name(),
-                                   svnuser=self._configuration.svnuser(),
-                                   svnpasswd=self._configuration.svnpass())
-            cs_list.append(cs)
-        return cs_list
+        return self._vcs_factory.change_source(project, self._configuration)
+
+
+class GitFilter(VcsFilter):
+
+    def __init__(self):
+        VcsFilter.__init__(self, 'git')
 
 
 class HgFilter(VcsFilter):
 
     def __init__(self):
         VcsFilter.__init__(self, 'hg')
-
-    def change_source(self, project):
-        cs_list = []
-        for branch in project.branches():
-            work_dir = os.path.join(project.name(),
-                                    branch.name(),
-                                    make_version(branch.version()))
-            cs = changes.HgPoller(repourl=project.url(),
-                                  branch=branch.name(),
-                                  workdir=work_dir)
-            cs_list.append(cs)
-        return cs_list

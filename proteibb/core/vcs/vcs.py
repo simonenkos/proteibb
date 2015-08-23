@@ -1,3 +1,5 @@
+import string
+
 from proteibb.util.factory import NamedFactory
 
 
@@ -8,6 +10,9 @@ class VCS:
 
     def change_source(self, *args, **kwargs):
         raise NotImplementedError()
+
+    def clean_branch_name(self, branch):
+        return branch.translate(None, ' ?.!/;:')
 
     factory = NamedFactory('vcs')
 

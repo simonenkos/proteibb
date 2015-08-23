@@ -25,6 +25,11 @@ class Svn(VCS):
             cs_list.append(cs)
         return cs_list
 
+    def clean_branch_name(self, branch):
+        if branch != 'trunk':
+            branch = branch.split('/').pop()
+        return branch
+
     @staticmethod
     def _make_url(url, branch):
         if not url.endswith('/'):

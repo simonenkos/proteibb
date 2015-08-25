@@ -6,7 +6,7 @@ from proteibb.core.properties import *
 from buildbot.plugins import util
 
 from proteibb.core.builder.steps.checkout import Checkout
-from proteibb.core.builder.steps.compile import Compile
+from proteibb.core.builder.steps.process_sources import ProcessSources
 from proteibb.core.vcs.vcs import VCS
 
 
@@ -33,6 +33,7 @@ class CppBuilder(builder.Builder):
                 branch_name = branch.name()
                 chain = [
                     Checkout(project_vcs, project_code, project.url(), branch_name, platform),
+                    ProcessSources(project, lambda file_name: file_name.endswith('.cpp') or file_name.endswith('.c'))
                     # Todo: Add next steps.
                 ]
                 build_factory = util.BuildFactory()

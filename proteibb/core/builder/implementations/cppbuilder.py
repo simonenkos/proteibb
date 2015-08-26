@@ -2,6 +2,7 @@ from proteibb.core.builder import builder
 from proteibb.core.options import OptionBase
 from proteibb.core.platforms import PlatformBase
 from proteibb.core.properties import *
+from proteibb.core.filters import *
 
 from buildbot.plugins import util
 
@@ -33,7 +34,7 @@ class CppBuilder(builder.Builder):
                 branch_name = branch.name()
                 chain = [
                     Checkout(project_vcs, project_code, project.url(), branch_name, platform),
-                    ProcessSources(project, lambda file_name: file_name.endswith('.cpp') or file_name.endswith('.c'))
+                    #ProcessSources(project, FileExtensionFilter('.cpp', '.c++', '.cc', '.c')),
                     # Todo: Add next steps.
                 ]
                 build_factory = util.BuildFactory()

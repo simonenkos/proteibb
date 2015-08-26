@@ -18,3 +18,14 @@ class ClassNameFilter(AlteringFilter):
         if len(obj_list) != 1:
             raise ValueError('unexpected count of objects was filtered by ClassNameFilter')
         return obj_list[0]
+
+
+class FileExtensionFilter(Filter):
+
+    def __init__(self, *args):
+        def filtering_function(file_name):
+            for extension in args:
+                if file_name.endswith(extension):
+                    return True
+            return False
+        Filter.__init__(self, filtering_function)

@@ -9,8 +9,11 @@ from buildbot.plugins import util
 from proteibb.core.builder.steps.checkout import Checkout
 from proteibb.core.builder.steps.process_sources import ProcessSources
 from proteibb.core.vcs.vcs import VCS
+from proteibb.core.builder import builder_factory
+from proteibb.util.factory import register_class
 
 
+@register_class(builder_factory)
 class CppBuilder(builder.Builder):
 
     options_factory = ObjectFactory()

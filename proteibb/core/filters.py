@@ -10,22 +10,10 @@ class EmptyFiler(Filter):
 class ClassNameFilter(AlteringFilter):
 
     def __init__(self, desired_name):
-        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name,
-                                ClassNameFilter._altering_function)
+        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name)
 
-    @staticmethod
-    def _altering_function(obj_list):
-        if len(obj_list) != 1:
+    def __call__(self, *args, **kwargs):
+        object_list = AlteringFilter.__call__(self, *args, **kwargs)
+        if len(object_list) != 1:
             raise ValueError('unexpected count of objects was filtered by ClassNameFilter')
-        return obj_list[0]
-
-
-class FileExtensionFilter(Filter):
-
-    def __init__(self, *args):
-        def filtering_function(file_name):
-            for extension in args:
-                if file_name.endswith(extension):
-                    return True
-            return False
-        Filter.__init__(self, filtering_function)
+        return object_list[0]

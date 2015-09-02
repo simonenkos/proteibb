@@ -4,6 +4,7 @@ from os import listdir
 from os.path import isfile, join, splitext
 
 from proteibb.core.project.project import Project
+from proteibb.util.factory import FactoryInterface
 from proteibb.core.configuration import configuration_factory
 from proteibb.core.builder import builder_factory
 
@@ -18,8 +19,8 @@ class Workspace:
         self._builders = []
         self._projects = []
 
-        if not base_path.endwith('/'):
-            base_path.append('/')
+        if not base_path.endswith('/'):
+            base_path += '/'
 
         for structure in ['configuration', 'builders', 'projects']:
             directory = base_path + structure + '/'
@@ -32,22 +33,29 @@ class Workspace:
         for file_name in listdir(directory):
             entry_path = join(directory, file_name)
             entry_name, extension = splitext(file_name)
-            if isfile(entry_path) and extension is '.json':
+            if isfile(entry_path) and extension == '.json':
                 with open(entry_path) as data_file:
                     entry_data = json.load(data_file)
                     creation_callback(entry_name, entry_data)
 
     def _add_configuration(self, name, data):
-        conf = configuration_factory.make(data, configuration_name=name)
-        self._configurations.append(conf)
+        try:
+            conf = configuration_factory.make(data, configuration_name=name)
+        except FactoryInterface.NoClassRegistered:
+            print "No configuration handler found for: " + name
+        else:
+            self._configurations.append(conf)
 
     def _add_builders(self, name, data):
-        builder = builder_factory.make(data, builder_name=name)
-        self._builders.append(builder)
+        try:
+            builder = builder_factory.make(data, builder_name=name)
+        except FactoryInterface.NoClassRegistered:
+            print "No builder description handler found for: " + name
+        else:
+            self._builders.append(builder)
 
     def _add_projects(self, name, data):
-        project = Project(data)
-        self._projects.append(project)
+        self._projects.append(Project(data))
 
     def get_configuration(self, configuration_filter):
         return configuration_filter(self._configurations)

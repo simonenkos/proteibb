@@ -1,10 +1,13 @@
 from proteibb.core.properties import *
 from proteibb.core.configuration.slave import Slave
+from proteibb.core.configuration import configuration_factory
+from proteibb.util.factory import register_class
 
 
-class Configuration(Property.Handler):
+@register_class(configuration_factory)
+class General(Property.Handler):
     """
-    Example of configuration.json file which keeps general information about build system:
+    Example of general.json file which keeps general information about build system:
     {
         "svnuser" : "user-name",
         "svnpass" : "user-password",
@@ -18,8 +21,8 @@ class Configuration(Property.Handler):
     """
     def __init__(self, data):
         properties = [
-            StringProperty('svnuser'),
-            StringProperty('svnpass'),
+            StringProperty('svnuser', True),
+            StringProperty('svnpass', True),
             PropertyListAdapter('slaves', False, SubProperty, PropertyAdapter.Arguments(Slave))
         ]
         Property.Handler.__init__(self, properties, data)

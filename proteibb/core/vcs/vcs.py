@@ -1,9 +1,10 @@
-import string
-
 from proteibb.util.factory import NamedFactory
 
 
 class VCS:
+
+    def __init__(self, *args, **kwargs):
+        pass
 
     def checkout(self, *args, **kwargs):
         raise NotImplementedError()

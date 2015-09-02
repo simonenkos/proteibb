@@ -10,11 +10,10 @@ class EmptyFiler(Filter):
 class ClassNameFilter(AlteringFilter):
 
     def __init__(self, desired_name):
-        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name,
-                                ClassNameFilter._altering_function)
+        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name)
 
-    @staticmethod
-    def _altering_function(obj_list):
-        if len(obj_list) != 1:
+    def __call__(self, *args, **kwargs):
+        object_list = AlteringFilter.__call__(self, *args, **kwargs)
+        if len(object_list) != 1:
             raise ValueError('unexpected count of objects was filtered by ClassNameFilter')
-        return obj_list[0]
+        return object_list[0]

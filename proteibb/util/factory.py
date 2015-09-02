@@ -3,6 +3,9 @@ class FactoryInterface:
     class NoFactoryException(Exception):
         pass
 
+    class NoClassRegistered(Exception):
+        pass
+
     def __init__(self):
         self._registry = []
 
@@ -22,12 +25,12 @@ class NamedFactory(FactoryInterface):
         FactoryInterface.__init__(self)
 
     def make(self, *args, **kwargs):
-        if self._arg_name in kwargs:
+        if self._arg_name not in kwargs:
             raise SyntaxError('invalid arguments passed to named factory')
         for cls in self._registry:
             if cls.__name__.lower() == kwargs[self._arg_name].lower():
                 return cls(*args, **kwargs)
-        raise TypeError('factory error: no class found')
+        raise FactoryInterface.NoClassRegistered()
 
 
 class ObjectFactory(FactoryInterface):

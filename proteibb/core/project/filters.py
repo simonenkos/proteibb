@@ -1,5 +1,5 @@
 from proteibb.core.filters import *
-from proteibb.core.configuration import configuration as conf
+from proteibb.core.configuration import general as conf
 from proteibb.core.project.project import Project
 from proteibb.core.vcs.vcs import VCS
 
@@ -45,7 +45,7 @@ class VcsFilter(ProjectFilter):
 class SvnFilter(VcsFilter):
 
     def __init__(self, configuration):
-        if not isinstance(configuration, conf.Configuration):
+        if not isinstance(configuration, conf.General): # fix to Configuration interface
             raise TypeError('invalid configuration object was passed to svn filter')
         self._configuration = configuration
         VcsFilter.__init__(self, 'svn')

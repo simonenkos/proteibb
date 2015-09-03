@@ -10,7 +10,7 @@ class EmptyFiler(Filter):
 class ClassNameFilter(AlteringFilter):
 
     def __init__(self, desired_name):
-        AlteringFilter.__init__(self, lambda obj: type(obj).__name__.lower() == desired_name)
+        AlteringFilter.__init__(self, lambda obj: obj.__class__.__name__.lower() == desired_name)
 
     def __call__(self, *args, **kwargs):
         object_list = AlteringFilter.__call__(self, *args, **kwargs)

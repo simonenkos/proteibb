@@ -23,7 +23,7 @@ class General(Property.Handler):
         properties = [
             StringProperty('svnuser', True),
             StringProperty('svnpass', True),
-            PropertyListAdapter('slaves', False, SubProperty, PropertyAdapter.Arguments(Slave))
+            PropertyListAdapter('slaves', False, SubProperty, PropertyAdapter.Arguments(False, Slave))
         ]
         Property.Handler.__init__(self, properties, data)
 

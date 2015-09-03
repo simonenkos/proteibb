@@ -29,6 +29,7 @@ class NamedFactory(FactoryInterface):
             raise SyntaxError('invalid arguments passed to named factory')
         for cls in self._registry:
             if cls.__name__.lower() == kwargs[self._arg_name].lower():
+                kwargs.pop(self._arg_name)
                 return cls(*args, **kwargs)
         raise FactoryInterface.NoClassRegistered()
 

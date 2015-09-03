@@ -8,7 +8,7 @@ class Filter:
         self._filter = filter_function
 
     def __call__(self, *args, **kwargs):
-        return filter(self._filter, *args)
+        return filter(self._filter, args)
 
 
 def apply_filter_set_serial(*args):
@@ -16,7 +16,7 @@ def apply_filter_set_serial(*args):
         for a in args:
             if not isinstance(a, Filter):
                 raise TypeError('invalid filter set arguments')
-            objects = a(objects)
+            objects = a(*objects)
         return objects
     return processor
 
@@ -27,6 +27,7 @@ def apply_filter_set_parallel(*args):
         for a in args:
             if not isinstance(a, Filter):
                 raise TypeError('invalid filter set arguments')
-            new_objects.extend(a(objects))
+            # Make list flatten if nested lists are found.
+            new_objects.extend(a(*objects))
         return new_objects
     return processor

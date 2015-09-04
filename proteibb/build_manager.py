@@ -12,9 +12,10 @@ class BuildManager:
 
     def __init__(self, ws_root_path):
         self._ws = ws.Workspace(ws_root_path)
-
-    def get_configuration(self):
-        return self._ws.get_configuration(filters.ClassNameFilter('configuration'))
+        try:
+            self._ws.get_configuration(filters.ClassNameFilter('general'))
+        except Exception as e:
+            raise Exception("Can't load general.json configuration file: " + str(e))
 
     def get_slaves(self):
         configuration = self.get_configuration()
@@ -35,12 +36,12 @@ class BuildManager:
         return tmp
 
     def get_schedulers(self):
-        pass
+        return []
 
     def get_builders(self):
         builders = []
-        configuration = self.get_configuration()
-        for project in self._ws.get_projects(filters.EmptyFiler):
+        configuration = self._ws.get_configuration(filters.ClassNameFilter('general'))
+        for project in self._ws.get_projects(filters.EmptyFiler()):
             builder = self._ws.get_builders(filters.ClassNameFilter(project.builder()))
             builders.extend(builder.make(configuration, project))
         return builders

@@ -11,11 +11,11 @@ class FilterTestCase(unittest.TestCase):
 
     def test_open_filter(self):
         f = Filter(lambda x: True)
-        self.assertEqual(f([1, 2, 'a', None, 'b']), [1, 2, 'a', None, 'b'])
+        self.assertEqual(f(1, 2, 'a', None, 'b'), [1, 2, 'a', None, 'b'])
 
     def test_altering_filter(self):
         f = AlteringFilter((lambda x: x <= 10), (lambda e: str(e - 5)))
-        self.assertEqual(f(range(5, 15)), ['0', '1', '2', '3', '4', '5'])
+        self.assertEqual(f(*range(5, 15)), ['0', '1', '2', '3', '4', '5'])
 
     def test_filter_set_serial_processing(self):
         f1 = Filter(lambda x: x > 20)

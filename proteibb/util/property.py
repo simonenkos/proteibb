@@ -29,7 +29,7 @@ class Property:
             raise SyntaxError("no required property with name '" + self._name + "' was found")
         if val is not None:
             if not self._property_validator(val):
-                raise SyntaxError("an invalid value for '" + self._name + "' property: " + val)
+                raise SyntaxError("an invalid value for '" + self._name + "' property: " + str(val))
             self._apply_new_value(val)
 
     def _set_validator(self, validator):

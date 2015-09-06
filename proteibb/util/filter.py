@@ -8,7 +8,7 @@ class Filter:
         self._filter = filter_function
 
     def __call__(self, *args, **kwargs):
-        return filter(self._filter, args)
+        return list(filter(self._filter, args))
 
 
 def apply_filter_set_serial(*args):

@@ -13,7 +13,7 @@ class Builder(Property.Handler):
             "slave_x86_debug"
         ],
         "options" : { ... },
-        "platforms" : [ ... ],
+        "platforms" : { ... },
     }
     This class describes a base structure of a builder. Successors of this class should
     implement specific properties of a concrete builder in addition to existing ones.

@@ -23,6 +23,7 @@ class ProjectTestCase(unittest.TestCase):
             'type': 'library',
             'vcs': 'git',
             'url': 'http://gitblit',
+            'builder': 'somebuilder',
             'platforms': ['platformx', 'platformy'],
         }
         self.assertRaises(SyntaxError, project.Project, data)
@@ -34,6 +35,7 @@ class ProjectTestCase(unittest.TestCase):
             'type': 'library',
             'vcs': 'git',
             'url': 'http://gitblit',
+            'builder': 'somebuilder',
             'platforms': ['platformx', 'platformy'],
             'branches': []
         }
@@ -46,6 +48,7 @@ class ProjectTestCase(unittest.TestCase):
             'type': 'library',
             'vcs': 'git',
             'url': 'http://gitblit',
+            'builder': 'somebuilder',
             'platforms': ['platformx', 'platformy'],
             'branches': [
                 {
@@ -62,6 +65,7 @@ class ProjectTestCase(unittest.TestCase):
             'type': 'library',
             'vcs': 'git',
             'url': 'http://gitblit',
+            'builder': 'somebuilder',
             'branches': [
                 {
                     'name': 'master',
@@ -75,6 +79,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.type(), 'library')
         self.assertEqual(p.vcs(), 'git')
         self.assertEqual(p.url(), 'http://gitblit')
+        self.assertEqual(p.builder(), 'somebuilder')
         self.assertEqual(len(p.branches()), 1)
         self.assertEqual(p.branches()[0].name(), 'master')
         self.assertEqual(p.branches()[0].version(), [0, 7])
@@ -86,6 +91,7 @@ class ProjectTestCase(unittest.TestCase):
             'type': 'application',
             'vcs': 'svn',
             'url': 'http://subversion',
+            'builder': 'somebuilder',
             'platforms': [
                 'x86',
                 'arm'
@@ -148,6 +154,7 @@ class ProjectTestCase(unittest.TestCase):
         self.assertEqual(p.type(), 'application')
         self.assertEqual(p.vcs(), 'svn')
         self.assertEqual(p.url(), 'http://subversion')
+        self.assertEqual(p.builder(), 'somebuilder')
         b = p.branches()
         self.assertEqual(len(b), 3)
         # first branch

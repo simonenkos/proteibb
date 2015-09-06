@@ -9,8 +9,9 @@ class Project(Property.Handler):
         "code" : "project_unique_code",
         "name" : "project",
         "type" : "library|application|test",
-        "vcs"  : "svn|git|hg",
-        "url"  : "http://url_to_repository",
+        "vcs" : "svn|git|hg",
+        "url" : "http://url_to_repository",
+        "builder" : "name-of-a-builder"
         // Common platforms list.
         "platforms" : [
             "arm",
@@ -63,6 +64,7 @@ class Project(Property.Handler):
             TypeProperty(),
             VcsProperty(),
             UrlProperty(),
+            StringProperty('builder'),
             ExtensionPropertyListAdapter('platforms', True, StringProperty),
             ExtensionPropertyListAdapter('dependencies', True, StringProperty),
             ExtensionPropertyListAdapter('options', True, StringProperty),
@@ -84,6 +86,10 @@ class Project(Property.Handler):
 
     @Property.Handler.replace
     def vcs(self):
+        pass
+
+    @Property.Handler.replace
+    def builder(self):
         pass
 
     @Property.Handler.replace

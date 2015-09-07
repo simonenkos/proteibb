@@ -43,8 +43,8 @@ class BuildManager:
         builders = []
         configuration = self._get_configuration()
         for project in self._ws.get_projects(filters.EmptyFiler()):
+            builder_name = project.builder()
             try:
-                builder_name = project.builder()
                 builder = self._ws.get_builders(filters.ClassNameFilter(builder_name))
                 builders.extend(builder.make(configuration, project))
             except ValueError:

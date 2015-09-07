@@ -1,3 +1,5 @@
+import re
+
 from proteibb.util.factory import NamedFactory
 
 
@@ -13,7 +15,7 @@ class VCS:
         raise NotImplementedError()
 
     def clean_branch_name(self, branch):
-        return branch.translate(None, ' ?.!/;:')
+        return re.sub('[?.!/;:]', '_', branch)
 
     factory = NamedFactory('vcs')
 

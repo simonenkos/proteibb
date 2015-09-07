@@ -9,13 +9,11 @@ class OptionsGroup:
         "option-ab-group-name" : [
             {
                 "name" : "optiona",
-                "description" : "Option A description",
-                "dependencies" : ["liba"]
+                "description" : "Option A description"
             },
             {
                 "name" : "optionb",
-                "description" : "Option B description",
-                "dependencies" : ["libb", "libc"]
+                "description" : "Option B description"
             }
         ],
         "option-x-group-name" : [
@@ -48,7 +46,6 @@ class OptionBase(Property.Handler):
         properties = [
             StringProperty('name', is_optional=False),
             StringProperty('description', is_optional=False),
-            PropertyListAdapter('dependencies', True, StringProperty),
         ]
         if additional_options:
             properties.extend(additional_options)
@@ -60,8 +57,4 @@ class OptionBase(Property.Handler):
 
     @Property.Handler.replace
     def description(self):
-        pass
-
-    @Property.Handler.replace
-    def dependencies(self):
         pass

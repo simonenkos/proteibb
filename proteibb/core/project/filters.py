@@ -1,5 +1,5 @@
 from proteibb.core.filters import *
-from proteibb.core.configuration import general as conf
+from proteibb.core.configuration.general import General
 from proteibb.core.project.project import Project
 from proteibb.core.vcs.vcs import VCS
 
@@ -47,13 +47,13 @@ class SvnFilter(VcsFilter):
 
     def __init__(self, configuration):
         # Require for 'General' configuration which should have svn authentication parameters.
-        if not isinstance(configuration, conf.General):
+        if not isinstance(configuration, General):
             raise TypeError('invalid configuration object was passed to svn filter')
         self._configuration = configuration
         VcsFilter.__init__(self, 'svn')
 
     def change_source(self, project):
-        # Overload the function to have a possibility to pass the configuration as a argument.
+        # Overload the function to have a possibility to pass the configuration as an argument.
         return self._vcs_factory.change_source(project, self._configuration)
 
 

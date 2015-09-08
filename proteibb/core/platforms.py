@@ -20,6 +20,8 @@ class PlatformsGroup:
             self._platforms[platform_name] = platform_factory.make(platform_data)
 
     def get_platform(self, platform_name):
+        if platform_name not in self._platforms:
+            raise ValueError('no platform found with name: ' + platform_name)
         return self._platforms[platform_name]
 
 

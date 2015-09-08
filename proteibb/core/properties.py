@@ -74,7 +74,6 @@ class SubProperty(Property):
 class GroupProperty(Property):
 
     def __init__(self, name, is_optional, group_cls, factory, *args, **kwargs):
-        print name + " <=> " + str(factory) + " <=> " + str(isinstance(factory, FactoryInterface))
         if not isinstance(factory, FactoryInterface):
             raise TypeError('invalid factory type')
         if not inspect.isclass(group_cls):

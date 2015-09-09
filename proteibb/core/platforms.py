@@ -29,7 +29,8 @@ class PlatformBase(Property.Handler):
 
     def __init__(self, data, additional_properties=None):
         properties = [
-            StringProperty('name', is_optional=False)
+            StringProperty('name', is_optional=False),
+            PropertyListAdapter('slaves', False, StringProperty),
         ]
         if additional_properties:
             properties.extend(additional_properties)
@@ -37,4 +38,8 @@ class PlatformBase(Property.Handler):
 
     @Property.Handler.replace
     def name(self):
+        pass
+
+    @Property.Handler.replace
+    def slaves(self):
         pass

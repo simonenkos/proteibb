@@ -39,7 +39,6 @@ class Platform(PlatformBase):
 
     def __init__(self, data):
         properties = [
-            PropertyListAdapter('slaves', False, StringProperty),
             StringProperty('cpp-compiler'),
             StringProperty('c-compiler'),
             StringProperty('archiver'),
@@ -49,7 +48,3 @@ class Platform(PlatformBase):
             PathProperty('sys-root', True),
         ]
         PlatformBase.__init__(self, data, properties)
-
-    @PlatformBase.replace
-    def slaves(self):
-        pass

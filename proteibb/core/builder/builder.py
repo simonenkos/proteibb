@@ -12,10 +12,6 @@ class Builder(Property.Handler):
     Example of builder json configuration file:
     {
         "name" : "builder-name",
-        "slaves" : [
-            "slave_x86_release",
-            "slave_x86_debug"
-        ],
         "options" : { ... },
         "platforms" : { ... },
     }
